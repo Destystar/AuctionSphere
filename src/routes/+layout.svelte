@@ -16,7 +16,7 @@
                 <a href="/search" class="block text-center">Search</a>
             </li>
             <li>
-                <a href="/discover" class="block text-center">Search</a>
+                <a href="/discover" class="block text-center">Discover</a>
             </li>
             <li></li>
         </ul>
