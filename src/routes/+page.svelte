@@ -1,4 +1,4 @@
 <script>
-    import Authenticate from "../component/Authenticate.svelte";
+    import Authenticate from "../component/AuthenticateTemp.svelte";
 </script>
 <Authenticate/>
