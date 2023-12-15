@@ -3,7 +3,7 @@
     import mainIcon from "../resources/icons/appicon.png";
 </script>
 
-<div class="bg-gradient-to-br from-midnight-blue to-midnight-purple">
+<div class="bg-gradient-to-br from-midnight-blue to-midnight-purple h-screen">
     <nav class="bg-dim-grey text-gray-300 text-lg font-bold h-9">
         <ul class="flex h-full list-none w-full justify-between items-center px-4">
             <h1>

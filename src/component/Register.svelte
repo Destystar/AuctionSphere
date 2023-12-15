@@ -23,11 +23,8 @@
       <div class="flex items-center justify-center">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit">
-          Sign In
+          Create Account
         </button>
-        <a href="../routes/register"><button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-          Register
-        </button></a>
       </div>
     </form>
 </div>
