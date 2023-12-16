@@ -17,7 +17,7 @@
     }
 </script>
 
-<div class="authContainer h-screen flex items-center justify-center">
+<div class="h-screen flex items-center justify-center">
     <!-- Main Login Container -->
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 flex flex-col gap-y-3 max-w-md w-full">
         <h1 class="text-3xl font-roboto font-bold text-gray-800 mb-4 text-center">{register ? "Register" : "Login"}</h1>
@@ -57,10 +57,14 @@
             <p>Or</p>
             {#if !register}
                 <div class="flex items-center flex-col">
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                     <p on:click={handleRegister} class="hover:text-custom-slate cursor-pointer">Don't have an account?</p>
                 </div>
             {:else}
                 <div>
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                     <p on:click={handleRegister} class="hover:text-custom-slate cursor-pointer">Already have an account?</p>
                 </div>
             {/if}
