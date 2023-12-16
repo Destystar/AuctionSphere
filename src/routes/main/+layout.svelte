@@ -1,7 +1,6 @@
 <script>
     import "../app.css";
     import mainIcon from "../resources/icons/appicon.png";
-
 </script>
 
 <div class="bg-gradient-to-br from-midnight-blue to-midnight-purple h-screen">
