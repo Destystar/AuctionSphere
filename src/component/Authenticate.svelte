@@ -1,12 +1,40 @@
 <script>
+    import { auth, db } from "$lib/firebase/firebase";
     import { authHandlers } from "../store/store";
+    import CryptoJS from "crypto-js";
+    import { v4 as uuidv4 } from "uuid";
+    import { doc, setDoc, collection } from "firebase/firestore";
 
     let email = "";
     let password = "";
     let confirmPassword = "";
+    let key = ""
     let error = false;
     let register = false;
     let authenticating = false;
+
+
+    function createKey(){
+        return uuidv4();
+    }
+
+
+    /**
+     * @param {any} input
+     * @param {any} key
+     */
+    function encrypt(input, key) {
+        return CryptoJS.AES.encrypt(input, key).toString();
+    }
+
+    /**
+     * @param {any} input
+     * @param {any} key
+     */
+    function decrypt(input, key) {
+        const bytes = CryptoJS.AES.decrypt(input, key);
+        return bytes.toString();
+    }
 
     async function handleAuthenticate() {
         if (authenticating) {
