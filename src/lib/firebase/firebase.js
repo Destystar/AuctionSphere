@@ -1,22 +1,34 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
+import { deleteApp, getApp, getApps, initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyA-FrZogUDOqSuYqCvufmLcBk9vpB5e0ng",
-  authDomain: "auction-sphere-ddc31.firebaseapp.com",
-  databaseURL: "https://auction-sphere-ddc31-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "auction-sphere-ddc31",
-  storageBucket: "auction-sphere-ddc31.appspot.com",
-  messagingSenderId: "147405017739",
-  appId: "1:147405017739:web:e224f1923be3543053fa8e",
-  measurementId: "G-ZF3757BFMN"
+  apiKey: import.meta.env.VITE_APIKEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_DATABASE_URL,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+let App;
+if (!getApps().length) {
+    App = initializeApp(firebaseConfig)
+} 
+else {
+    App = getApp()
+    deleteApp(App)
+    App = initializeApp(firebaseConfig)
+}
+
+export const db = getFirestore(App)
+export const auth = getAuth(App)
