@@ -32,3 +32,4 @@ else {
 
 export const db = getFirestore(App)
 export const auth = getAuth(App)
+export const analytics = getAnalytics(App);
