@@ -8,7 +8,9 @@
     let email = "";
     let password = "";
     let confirmPassword = "";
-    let key = ""
+    let errorAuth = false;
+    let errorLack = false;
+    let errorMatch = false;
     let error = false;
     let register = false;
     let authenticating = false;
@@ -41,22 +43,39 @@
             return;
         }
         if (!email || !password || (register && !confirmPassword)) {
-            error = true
+            errorAuth = true
+            errorLack = true;
             return
         }
         authenticating = true;
+        errorAuth = false;
+        errorLack = false;
+        errorMatch = false;
 
         try {
 
             if (!register) {
-                await authHandlers.login(email, password);
+                if ( password != "" || email != "" ) {
+                    await authHandlers.login(email, password);
+                } else {
+                    errorAuth = true;
+                    errorLack = true;
+                }
             } else {
-                await authHandlers.signup(email, password);
+                if (password === confirmPassword) {
+                    await authHandlers.signup(email, password);
+                } else if (password === "" || confirmPassword === "" || email === "") {
+                    errorAuth = true;
+                    errorLack = true;
+                }  else {
+                    errorAuth = true;
+                    errorMatch = true;
+                }
             }
 
         } catch (error) {
             console.log("Auth error occured", error);
-            error = true;
+            errorAuth = true;
             authenticating = false;
         }
 
@@ -72,8 +91,12 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 flex flex-col gap-y-3 max-w-md w-full">
         <h1 class="text-3xl font-roboto font-bold text-gray-800 mb-4 text-center">{register ? "Register" : "Login"}</h1>
-        {#if error}
-            <p class="flex justify-center text-red-700 ">Please check the email or password you have entered</p>
+        {#if errorAuth}
+            {#if errorMatch}
+                <p class="flex justify-center text-red-700 ">Your passwords don't match</p>
+            {:else}
+                <p class="flex justify-center text-red-700 ">{ errorLack ? "You haven't entered all of the required information" : "Please check the email or password you have entered" }</p>
+            {/if}
         {/if}
             <!-- Email -->
         <div class="flex flex-col">
