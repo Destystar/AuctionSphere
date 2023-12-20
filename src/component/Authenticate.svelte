@@ -137,7 +137,7 @@
 <div class="h-screen flex items-center justify-center">
     <!-- Main Login Container -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 flex flex-col gap-y-3 max-w-md w-full">
+    <form class="bg-ghost shadow-md rounded px-8 pt-6 pb-8 flex flex-col gap-y-3 max-w-md w-full">
         <h1 class="text-3xl font-roboto font-bold text-gray-800 mb-4 text-center">{register ? "Register" : "Login"}</h1>
         <!-- displays errors-->
         {#if errorAuth}

@@ -10,6 +10,7 @@ export default {
         'ghost': '#FAFAFF',
         'misty-rose': '#EAD7D7',
         'dim-grey': '#66666E',
+        'teal': '#028090',
       },
       fontFamily: {
         sans: ['Roboto','sans-serif']
