@@ -106,10 +106,6 @@
         </div>
     </nav>
 
-    <div class="container mx-auto mt-4 px-4">
-        <p class="text-white">Your main content goes here.</p>
-    </div>
-
     <!-- svelte-ignore a11y-mouse-events-have-key-events -->
     <button on:click={authHandlers.logout} class="absolute top-16 right-3 p-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline transition" type="submit" on:mouseout={handleMouseOut} on:mouseover={handleMouseOver}>
         {#if logoutHover}
