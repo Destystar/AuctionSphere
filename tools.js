@@ -1,3 +1,6 @@
+/**
+ * @param {number | bigint} amount
+ */
 export function formatPrice(amount, currencyCode = 'USD') {
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
