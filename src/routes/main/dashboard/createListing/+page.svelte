@@ -1,25 +1,47 @@
 <script>
+// @ts-nocheck
+
     let title = '';
+    let image;
+    let description = '';
     let price = '';
     let selectedCurrency = 'GBP';
+    let duration = { days: 0, hours: 0, minutes: 0 };
   
-    // Maximum characters for the title
+    /**
+     * @param {{ target: { value: string; }; }} event
+     * @param {string | number} unit
+     */
+    function handleDurationInput(event, unit) {
+      const value = parseInt(event.target.value) || 0;
+      // @ts-ignore
+      duration[unit] = value;
+    }
+  
     const maxTitleCharacters = 30;
+    const maxDescriptionCharacters = 300;
   
-    // Function to update the title character count
     function updateTitleCount() {
       const remainingCharacters = maxTitleCharacters - title.length;
       console.log(`Remaining characters: ${remainingCharacters}`);
     }
+
+    function updateDescriptionCount() {
+      const remainingCharacters = maxDescriptionCharacters - title.length;
+      console.log(`Remaining characters: ${remainingCharacters}`);
+    }
+
+    function handleDescriptionInput(event) {
+      description = event.target.value.slice(0, maxDescriptionCharacters);
+      updateDescriptionCount();
+    }
   
-    // Function to handle title input and limit length
     // @ts-ignore
     function handleTitleInput(event) {
       title = event.target.value.slice(0, maxTitleCharacters);
       updateTitleCount();
     }
   
-    // Function to handle price input
     // @ts-ignore
     function handlePriceInput(event) {
       price = event.target.value.replace(/[^\d.]/g, '');
@@ -30,7 +52,6 @@
       }
     }
   
-    // Function to handle currency change
     // @ts-ignore
     function handleChange(event) {
       selectedCurrency = event.target.value;
@@ -50,39 +71,80 @@
         <label class="block text-gray-700 text-sm font-bold mb-2">
           Title (max {maxTitleCharacters} characters):
         </label>
-        <input
-          type="text"
-          bind:value={title}
-          on:input={handleTitleInput}
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
+        <input type="text" bind:value={title} on:input={handleTitleInput} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
         <p class="text-sm text-gray-500">Characters remaining: {title.length}/{maxTitleCharacters}</p>
       </div>
-      <!-- Price input with Currency dropdown inline -->
+      <!-- Price input with currency selection -->
       <div class="mb-4 flex items-center">
         <div class="flex items-center w-full">
           <!-- svelte-ignore a11y-label-has-associated-control -->
           <label class="text-gray-700 text-sm font-bold mr-2">
             Price:
           </label>
-          <input
-            type="text"
-            bind:value={price}
-            on:input={handlePriceInput}
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
+          <input type="text" bind:value={price} on:input={handlePriceInput} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
         </div>
-        <select
-          id="currency"
-          bind:value={selectedCurrency}
-          on:change={handleChange}
-          class="ml-2 shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        >
+        <select id="currency" bind:value={selectedCurrency} on:change={handleChange} class="ml-2 shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
           <option value="GBP">GBP - £</option>
           <option value="EUR">EUR - €</option>
           <option value="USD">USD - $</option>
           <option value="JPY">JPY - ¥</option>
         </select>
+      </div>
+      <!-- Duration input -->
+      <div class="mb-4 flex items-center">
+        <!-- Duration input for days -->
+        <div class="mr-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Days:
+          </label>
+          <input type="number" bind:value={duration.days} on:input={(event) => handleDurationInput(event, 'days')} class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
+        </div>
+  
+        <!-- Duration input for hours -->
+        <div class="mr-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Hours:
+          </label>
+          <input
+            type="number"
+            bind:value={duration.hours}
+            on:input={(event) => {
+              const value = parseInt(event.target.value) || 0;
+              const totalHours = value + duration.days * 24;
+              duration.hours = totalHours % 24;
+              duration.days = Math.floor(totalHours / 24);
+            }}
+            class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
+        </div>
+  
+        <!-- Duration input for minutes -->
+        <div>
+          <!-- svelte-ignore a11y-label-has-associated-control -->
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Minutes:
+          </label>
+          <input
+            type="number"
+            bind:value={duration.minutes}
+            on:input={(event) => {
+              const value = parseInt(event.target.value) || 0;
+              const totalMinutes = value + duration.hours * 60 + duration.days * 24 * 60;
+              duration.minutes = totalMinutes % 60;
+              duration.hours = Math.floor(totalMinutes / 60) % 24;
+              duration.days = Math.floor(totalMinutes / (24 * 60));
+            }}
+            class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+      </div>
+      <!-- The description -->
+      <div class="mb-4">
+        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          Description (max {maxDescriptionCharacters} characters):
+        </label>
+        <input type="text" bind:value={description} on:input={handleDescriptionInput} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
+        <p class="text-sm text-gray-500">Characters remaining: {description.length}/{maxDescriptionCharacters}</p>
       </div>
       <button
         type="submit"
