@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/**/*.{html,js,svelte,ts}'],
+  content: [
+    './src/**/*.{html,js,svelte,ts}',
+    "./node_modules/flowbite/**/*.js"
+],
+  
   theme: {
     extend: {
       colors: {
@@ -8,14 +12,20 @@ export default {
         'midnight-purple': '#280137',
         'custom-slate': '#77878B',
         'ghost': '#FAFAFF',
-        'misty-rose': '#EAD7D7',
+        'midnight-grey': '#242424',
+        "midnight-red": "#240009",
+        "midnight-rose": "#560421",
         'dim-grey': '#66666E',
-        'teal': '#028090',
+        'dark-green': '#25291C',
+        'light-slate': "#8A95A5",
+        'dark-slate': "#474F5C"
       },
       fontFamily: {
         sans: ['Roboto','sans-serif']
       }
     }
   },
-  plugins: []
+  plugins: [
+    require('flowbite/plugin')
+  ]
 };
