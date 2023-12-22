@@ -119,4 +119,5 @@
         {/if}
         Logout
     </button>
+    <slot></slot>
 </div>
