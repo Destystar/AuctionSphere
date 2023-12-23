@@ -26,7 +26,7 @@
     */
     function handleImageUpload(event) {
         const file = event.target.files[0];
-        if (file && /\.(jpe?g|png)$/i.test(file.name)) {
+        if (file && /\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
             const reader = new FileReader();
             reader.onload = () => {
             image = reader.result;
