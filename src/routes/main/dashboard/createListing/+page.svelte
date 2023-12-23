@@ -1,7 +1,12 @@
 <script>
 // @ts-nocheck
 
+    // @ts-ignore
+    import { v4 } from 'uuid';
+    import { db } from "$lib/firebase/firebase";
+
     let title = '';
+    // @ts-ignore
     let image;
     let description = '';
     let price = '';
@@ -47,6 +52,7 @@
       console.log(`Remaining characters: ${remainingCharacters}`);
     }
 
+    // @ts-ignore
     function handleDescriptionInput(event) {
       description = event.target.value.slice(0, maxDescriptionCharacters);
       updateDescriptionCount();
@@ -75,7 +81,8 @@
   
     // Function to handle form submission
     function handleSubmit() {
-      // Your form submission logic here
+      let listingID = v4();
+      const docRef = doc();
     }
   </script>
   
