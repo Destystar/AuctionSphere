@@ -3,7 +3,8 @@
 
     // @ts-ignore
     import { v4 } from 'uuid';
-    import { db } from "$lib/firebase/firebase";
+    import { doc, setDoc, collection } from 'firebase/firestore';
+    import { auth, db } from "$lib/firebase/firebase";
 
     let title = '';
     // @ts-ignore
@@ -78,11 +79,40 @@
     function handleChange(event) {
       selectedCurrency = event.target.value;
     }
+
+    // Function to calculate the end time
+    function calculateEnd() {
+        const currentDateTime = new Date();
+        const totalMin = duration.days*24*60 + duration.hours*60 + duration.minutes;
+        const endDateTime = new Date(currentDateTime.getTime() + totalMin*60*1000);
+    }
   
     // Function to handle form submission
-    function handleSubmit() {
-      let listingID = v4();
-      const docRef = doc();
+    async function handleSubmit() {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+            console.error("You are not signed in");
+            return;
+        }
+        const username = user.username;
+        const listingsCol = collection(db, 'listings');
+        const listingID = v4();
+        // The data to be saved in database
+        const listingData = {
+            listingID,
+            sellerName: username,
+            title,
+            image,
+            price,
+            end: calculateEnd(),
+            description,
+        };
+        const listingDocRef = doc(listingsCol, listingID);
+        await setDoc(listingDocRef, listingData);
+    } catch (error) {
+        console.error("Error during form submission", error);
+      }
     }
   </script>
   
@@ -99,6 +129,7 @@
       </div>
       <!-- Image upload -->
       <div class="mb-6">
+        <!-- svelte-ignore a11y-label-has-associated-control -->
         <label class="block text-gray-700 text-sm font-bold mb-2">
           Upload Image:
         </label>
@@ -133,6 +164,7 @@
       <div class="mb-4 flex items-center">
         <!-- Duration input for days -->
         <div class="mr-4">
+          <!-- svelte-ignore a11y-label-has-associated-control -->
           <label class="block text-gray-700 text-sm font-bold mb-2">
             Days:
           </label>
@@ -141,6 +173,7 @@
   
         <!-- Duration input for hours -->
         <div class="mr-4">
+          <!-- svelte-ignore a11y-label-has-associated-control -->
           <label class="block text-gray-700 text-sm font-bold mb-2">
             Hours:
           </label>
