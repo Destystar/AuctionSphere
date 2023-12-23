@@ -1,33 +1,26 @@
 <script>
     import { auth, db } from "$lib/firebase/firebase";
     import { authHandlers } from "../store/store";
-    import CryptoJS from "crypto-js";
-    import { v4 as uuidv4 } from "uuid";
     import { doc, setDoc, query, where, getDocs, collection } from "firebase/firestore";
 
-    // input variables 
     let email = "";
-    let name ="";
+    let name = "";
     let password = "";
     let confirmPassword = "";
 
-    // error variables 
     let errorAuth = false;
     let errorLack = false;
     let errorMatch = false;
     let errorValid = false;
 
-    // status variables 
     let register = false;
     let authenticating = false;
 
-    // password validation variables 
     let isLengthValid = false;
     let isLowercaseValid = false;
     let isUppercaseValid = false;
     let isNumberValid = false;
     let isSpecialCharacterValid = false;
-
 
     // @ts-ignore
     function handlePasswordInput(event) {
@@ -37,7 +30,6 @@
         updateRequirement('uppercase', /[A-Z]/.test(value));
         updateRequirement('number', /\d/.test(value));
         updateRequirement('characters', /[^\w\d]/.test(value));
-
     }
 
     // @ts-ignore
@@ -65,7 +57,7 @@
     }
 
     if (!email || !password || (register && !confirmPassword)) {
-        errorAuth = true
+        errorAuth = true;
         errorLack = true;
         return;
     }
@@ -78,7 +70,6 @@
 
     try {
         if (!register) {
-            // sign in execution
             if (password !== "" || email !== "") {
                 await authHandlers.login(email, password);
             } else {
@@ -86,25 +77,34 @@
                 errorLack = true;
             }
         } else {
-            // register execution
-            const userCredential = await authHandlers.signup(email, password);
-            const user = auth.currentUser;
-            if (!user) {
-                console.error("User not found after signup");
-                return;
+            try {
+                // Assuming authHandlers.signup doesn't return a value
+                await authHandlers.signup(email, password);
+
+                // Retrieve the user separately
+                const user = auth.currentUser;
+
+                if (user) {
+                    const usernameQuerySnapshot = await getDocs(query(collection(db, 'users'), where('username', '==', name)));
+                    if (!usernameQuerySnapshot.empty) {
+                        errorAuth = true;
+                        errorValid = false;
+                        errorMatch = false;
+                        errorLack = false;
+                        alert('Username is already taken. Please choose another.');
+                        return;
+                    }
+
+                    await setDoc(doc(db, 'users', user.uid), {
+                        username: name,
+                    });
+                } else {
+                    console.error("User not found after signup");
+                }
+            } catch (error) {
+                console.log("Error during signup", error);
+                throw error; // Rethrow the error for further handling if needed
             }
-            const usernameQuerySnapshot = await getDocs(query(collection(db, 'users'), where('username', '==', name)));
-            if (!usernameQuerySnapshot.empty) {
-                errorAuth = true;
-                errorValid = false;
-                errorMatch = false;
-                errorLack = false;
-                alert('Username is already taken. Please choose another.');
-                return;
-            }
-            await setDoc(doc(db, 'users', user.uid), {
-                username: name,
-            });
         }
     } catch (error) {
         console.log("Auth error occurred", error);
@@ -113,6 +113,7 @@
         authenticating = false;
     }
 }
+
 
 
 
@@ -145,12 +146,14 @@
             </label>
         </div>
         <!-- Username -->
-        <div class="flex flex-col">
-            <label class="text-gray-700 text-sm font-bold mb-2 flex items-center">
-                <span class="w-3/12">Username</span>
-                <input bind:value={name} class="shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-1 ml-2" id="username" type="text" placeholder="Enter your username">
-            </label>
-        </div>
+        {#if register}
+            <div class="flex flex-col">
+                <label class="text-gray-700 text-sm font-bold mb-2 flex items-center">
+                    <span class="w-3/12">Username</span>
+                    <input bind:value={name} class="shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-1 ml-2" id="username" type="text" placeholder="Enter your username">
+                </label>
+            </div>
+        {/if}
         <!-- Password -->
         <div class="flex flex-col">
             <label class="text-gray-700 text-sm font-bold mb-2 flex items-center">
@@ -222,6 +225,5 @@
                 </div>
             {/if}
         </div>
-
     </form>
 </div>

@@ -83,9 +83,11 @@
     // Function to calculate the end time
     function calculateEnd() {
         const currentDateTime = new Date();
-        const totalMin = duration.days*24*60 + duration.hours*60 + duration.minutes;
-        const endDateTime = new Date(currentDateTime.getTime() + totalMin*60*1000);
+        const totalMilliseconds = duration.days * 24 * 60 * 60 * 1000 + duration.hours * 60 * 60 * 1000 + duration.minutes * 60 * 1000;
+        const endDateTime = new Date(currentDateTime.getTime() + totalMilliseconds);
+        return endDateTime;
     }
+
   
     // Function to handle form submission
     async function handleSubmit() {
@@ -96,6 +98,7 @@
             return;
         }
         const username = user.username;
+        console.log("Username:", username);
         const listingsCol = collection(db, 'listings');
         const listingID = v4();
         // The data to be saved in database
