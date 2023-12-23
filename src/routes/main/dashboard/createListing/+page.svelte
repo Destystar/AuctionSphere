@@ -21,6 +21,22 @@
     const maxTitleCharacters = 30;
     const maxDescriptionCharacters = 300;
   
+    /**
+    * @param {{ target: { files: any[]; }; }} event
+    */
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (file && /\.(jpe?g|png)$/i.test(file.name)) {
+            const reader = new FileReader();
+            reader.onload = () => {
+            image = reader.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Please upload a valid JPEG or PNG image.');
+        }
+    }
+
     function updateTitleCount() {
       const remainingCharacters = maxTitleCharacters - title.length;
       console.log(`Remaining characters: ${remainingCharacters}`);
@@ -73,6 +89,22 @@
         </label>
         <input type="text" bind:value={title} on:input={handleTitleInput} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
         <p class="text-sm text-gray-500">Characters remaining: {title.length}/{maxTitleCharacters}</p>
+      </div>
+      <!-- Image upload -->
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          Upload Image:
+        </label>
+        <div class="relative">
+          <input type="file" accept="image/*" on:change={handleImageUpload} class="hidden" id="imageInput" />
+          <label for="imageInput" class="cursor-pointer inline-block w-full h-40 border border-dashed border-gray-300 rounded-md flex items-center justify-center bg-gray-100 hover:bg-gray-200 focus:outline-none focus:shadow-outline">
+            {#if image}
+              <img src={image} alt="Uploaded" class="w-full h-full object-cover" />
+            {:else}
+              <span class="text-gray-500">Click or drag to upload an image</span>
+            {/if}
+          </label>
+        </div>
       </div>
       <!-- Price input with currency selection -->
       <div class="mb-4 flex items-center">
