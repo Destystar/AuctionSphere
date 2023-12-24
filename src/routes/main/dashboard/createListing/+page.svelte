@@ -11,6 +11,7 @@
     let image;
     let description = '';
     let price = '';
+    let category = '';
     let selectedCurrency = 'GBP';
     let duration = { days: 0, hours: 0, minutes: 0 };
   
@@ -76,8 +77,12 @@
     }
   
     // @ts-ignore
-    function handleChange(event) {
+    function handleCurrencyChange(event) {
       selectedCurrency = event.target.value;
+    }
+
+    function handleCategoryChange(event){
+      category = event.target.value;
     }
 
     // Function to calculate the end time
@@ -131,7 +136,7 @@
         <p class="text-sm text-gray-500">Characters remaining: {title.length}/{maxTitleCharacters}</p>
       </div>
       <!-- Image upload -->
-      <div class="mb-6">
+      <div class="mb-6 flex flex-col items-center">
         <!-- svelte-ignore a11y-label-has-associated-control -->
         <label class="block text-gray-700 text-sm font-bold mb-2">
           Upload Image:
@@ -147,6 +152,32 @@
           </label>
         </div>
       </div>
+      <!-- Category selection -->
+      <div class="mb-4 flex items-center w-full">
+        <div class="flex items-center">
+          <!-- svelte-ignore a11y-label-has-associated-control -->
+          <label class="text-gray-700 text-sm font-bold mr-[0.6rem] ml-[-0.5rem]">
+            Category:
+          </label>
+        </div>
+        <select id="category" bind:value={category} on:change={handleCategoryChange} class="w-full shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-[1.15rem]">
+          <option value="Antiquity">Antiquities & Collectibles</option>
+          <option value="Baby">Baby & Kids</option>
+          <option value="Books">Books & Magazines</option>
+          <option value="Discs">DvDs & CDs</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Health">Health & Beauty</option>
+          <option value="Home">Home & Furniture</option>
+          <option value="Music">Music & Instruments</option>
+          <option value="Office">Office Supplies</option>
+          <option value="Sports">Sports & Outdoors</option>
+          <option value="Technology">Technology</option>
+          <option value="Toys">Toys & Games</option>
+          <option value="VideoGameConsoles">Video Game Consoles</option>
+          <option value="VideoGames">Video Game Discs & Cartridges</option>
+        </select>
+      </div>
+          
       <!-- Price input with currency selection -->
       <div class="mb-4 flex items-center">
         <div class="flex items-center w-full">
@@ -156,7 +187,7 @@
           </label>
           <input type="text" bind:value={price} on:input={handlePriceInput} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
         </div>
-        <select id="currency" bind:value={selectedCurrency} on:change={handleChange} class="ml-2 shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <select id="currency" bind:value={selectedCurrency} on:change={handleCurrencyChange} class="ml-2 shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
           <option value="GBP">GBP - £</option>
           <option value="EUR">EUR - €</option>
           <option value="USD">USD - $</option>
