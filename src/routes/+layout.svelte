@@ -64,6 +64,6 @@
 
 </script>
 
-<div class="bg-gradient-to-br from-midnight-blue to-midnight-purple h-screen">
+<div class="bg-gradient-to-br from-midnight-blue to-midnight-purple h-screen overflow-y-scroll">
     <slot></slot>
 </div>
