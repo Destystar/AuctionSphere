@@ -102,14 +102,13 @@
             console.error("You are not signed in");
             return;
         }
-        const username = user.username;
         console.log("Username:", username);
         const listingsCol = collection(db, 'listings');
         const listingID = v4();
         // The data to be saved in database
         const listingData = {
             listingID,
-            sellerName: username,
+            sellerID: user.uid,
             title,
             image,
             price,
