@@ -107,7 +107,7 @@
     </nav>
 
     <!-- svelte-ignore a11y-mouse-events-have-key-events -->
-    <button on:click={authHandlers.logout} class="absolute top-16 right-3 p-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline transition" type="submit" on:mouseout={handleMouseOut} on:mouseover={handleMouseOver}>
+    <button on:click={authHandlers.logout} class="absolute top-8 right-8 p-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline transition" type="submit" on:mouseout={handleMouseOut} on:mouseover={handleMouseOver}>
         {#if logoutHover}
             <i class="mr-1.5 fa-solid fa-arrow-right-from-bracket fa-beat-fade"></i>
         {:else}
