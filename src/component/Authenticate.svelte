@@ -1,26 +1,40 @@
 <script>
     import { auth, db } from "$lib/firebase/firebase";
     import { authHandlers } from "../store/store";
-    import { doc, setDoc, query, where, getDocs, collection } from "firebase/firestore";
+    import CryptoJS from "crypto-js";
+    import { updateProfile, onAuthStateChanged } from "firebase/auth";
+    import { doc, setDoc, collection, getDocs, query, where } from "firebase/firestore";
 
+    // input variables 
     let email = "";
-    let name = "";
     let password = "";
     let confirmPassword = "";
+    let displayName = "";
 
+    // error variables 
     let errorAuth = false;
     let errorLack = false;
     let errorMatch = false;
     let errorValid = false;
 
+    // status variables 
     let register = false;
     let authenticating = false;
 
+    // password validation variables 
     let isLengthValid = false;
     let isLowercaseValid = false;
     let isUppercaseValid = false;
     let isNumberValid = false;
     let isSpecialCharacterValid = false;
+
+    /**
+     * @param {any} input
+     * @param {any} key
+     */
+    function encrypt(input, key) {
+        return CryptoJS.AES.encrypt(input, key).toString();
+    }
 
     // @ts-ignore
     function handlePasswordInput(event) {
@@ -56,7 +70,7 @@
         return;
     }
 
-    if (!email || !password || (register && !confirmPassword)) {
+    if (!email || !password || (register && (!displayName || !confirmPassword))) {
         errorAuth = true;
         errorLack = true;
         return;
@@ -77,15 +91,17 @@
                 errorLack = true;
             }
         } else {
-            try {
-                // Assuming authHandlers.signup doesn't return a value
-                await authHandlers.signup(email, password);
-
-                // Retrieve the user separately
-                const user = auth.currentUser;
-
+            await authHandlers.signup(email, password);
+            const unsubscribe = onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    const usernameQuerySnapshot = await getDocs(query(collection(db, 'users'), where('username', '==', name)));
+                    // Use updateProfile to add the username
+                    await updateProfile(user, { displayName: displayName });
+
+                    // Wait for a short time to allow updateProfile to take effect
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    // Check if the username is already taken
+                    const usernameQuerySnapshot = await getDocs(query(collection(db, 'user'), where('username', '==', displayName)));
                     if (!usernameQuerySnapshot.empty) {
                         errorAuth = true;
                         errorValid = false;
@@ -95,16 +111,17 @@
                         return;
                     }
 
-                    await setDoc(doc(db, 'users', user.uid), {
-                        username: name,
-                    });
+                    // Assuming your collection is named 'user' (singular)
+                    await setDoc(doc(db, 'user', user.uid), {
+                        username: displayName,
+                    }, { merge: true });
                 } else {
                     console.error("User not found after signup");
                 }
-            } catch (error) {
-                console.log("Error during signup", error);
-                throw error; // Rethrow the error for further handling if needed
-            }
+
+                // Unsubscribe from the listener
+                unsubscribe();
+            });
         }
     } catch (error) {
         console.log("Auth error occurred", error);
@@ -113,9 +130,6 @@
         authenticating = false;
     }
 }
-
-
-
 
 
     function handleRegister() {
@@ -138,21 +152,21 @@
                 <p class="flex justify-center text-red-700 ">{ errorLack ? "You haven't entered all of the required information" : "Please check the email or password you have entered" }</p>
             {/if}
         {/if}
-        <!-- Email -->
+            <!-- Email -->
         <div class="flex flex-col">
             <label class="text-gray-700 text-sm font-bold mb-2 flex items-center">
                 <span class="w-3/12">Email</span>
                 <input bind:value={email} class="shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-1 ml-2" id="email" type="email" placeholder="Enter your email">
             </label>
         </div>
-        <!-- Username -->
+        <!-- Display Name -->
         {#if register}
-            <div class="flex flex-col">
-                <label class="text-gray-700 text-sm font-bold mb-2 flex items-center">
-                    <span class="w-3/12">Username</span>
-                    <input bind:value={name} class="shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-1 ml-2" id="username" type="text" placeholder="Enter your username">
-                </label>
-            </div>
+        <div class="flex flex-col">
+            <label class="text-gray-700 text-sm font-bold mb-2 flex items-center">
+                <span class="w-3/12">Display Name</span>
+                <input bind:value={displayName} class="shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-1 ml-2" id="text" type="text" placeholder="Enter your username">
+            </label>
+        </div>
         {/if}
         <!-- Password -->
         <div class="flex flex-col">

@@ -37,6 +37,7 @@
                 const userRef = doc(db, "user", user.uid);
                 dataToSetToStore = {
                     email: user.email,
+                    username: user.displayName,
                 }
                 await setDoc(
                     userRef,

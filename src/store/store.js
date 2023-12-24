@@ -21,3 +21,4 @@ export const authHandlers = {
         await signOut(auth)
     }
 }
+
