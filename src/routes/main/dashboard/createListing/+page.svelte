@@ -5,6 +5,7 @@
     import { v4 } from 'uuid';
     import { doc, setDoc, collection } from 'firebase/firestore';
     import { auth, db } from "$lib/firebase/firebase";
+    import { goto } from '$app/navigation';
 
     let title = '';
     // @ts-ignore
@@ -15,6 +16,8 @@
     let selectedCurrency = 'GBP';
     let duration = { days: 0, hours: 0, minutes: 0 };
   
+    let submitting = false;
+
     /**
      * @param {{ target: { value: string; }; }} event
      * @param {string | number} unit
@@ -96,13 +99,13 @@
   
     // Function to handle form submission
     async function handleSubmit() {
+      submitting = true;
       try {
         const user = auth.currentUser;
         if (!user) {
             console.error("You are not signed in");
             return;
         }
-        console.log("Username:", username);
         const listingsCol = collection(db, 'listings');
         const listingID = v4();
         // The data to be saved in database
@@ -112,6 +115,7 @@
             title,
             image,
             price,
+            selectedCurrency,
             end: calculateEnd(),
             description,
         };
@@ -119,7 +123,9 @@
         await setDoc(listingDocRef, listingData);
     } catch (error) {
         console.error("Error during form submission", error);
-      }
+    }
+    submitting = false;
+    goto('../dashboard');
     }
   </script>
   
@@ -253,9 +259,12 @@
       </div>
       <button
         type="submit"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mx-auto"
-      >
-        Create Listing
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mx-auto">
+        {#if submitting}
+          <i class="fas fa-spinner fa-pulse"></i>
+        {:else}
+          Create Listing
+        {/if}
       </button>
     </form>
   </div>
