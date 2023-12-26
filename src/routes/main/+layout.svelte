@@ -64,23 +64,15 @@
 
 <div class="bg-gradient-to-br from-midnight-blue to-midnight-purple h-screen">
     <nav class="bg-gradient-to-r from-slate-600 to-slate-700 text-gray-300 text-lg font-bold h-12 shadow-lg">
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div class="container mx-auto flex items-center justify-between h-full px-4">
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
             <!-- svelte-ignore a11y-mouse-events-have-key-events -->
-            <div on:click={toggleDashboardDropdown} on:mouseout={hideDashboardDropdown} class="relative">
+            <div class="relative" on:mouseover={showDashboardDropdown} on:mouseout={hideDashboardDropdown}>
                 <a href="../main/dashboard" class="flex items-center text-xl">
-                  <img class="h-8 mr-2" src={mainIcon} alt="Go to the HomePage" />
-                  <span class="text-slate-200">Dashboard</span>
+                    <img class="h-8 mr-2" src={mainIcon} alt="Go to the HomePage">
+                    <span class="text-slate-200">Dashboard</span>
                 </a>
-                {#if isDashboardDropdownVisible}
-                  <div id="dashboardDropdown" class="absolute top-full left-0 mt-2 bg-white shadow-lg rounded overflow-hidden z-10">
-                    <a href="../main/dashboard/createListing" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Create Listing</a>
-                    <a href="../main/dashboard/viewListings" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">View Listings</a>
-                    <a href="../main/dashboard/viewBids" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">View Bids</a>
-                  </div>
-                {/if}
-              </div>
+            </div>
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div class="flex items-center space-x-3">
                 <a href="../main/search" class="text-slate-300 hover:text-ghost transition text-md">Search</a>
