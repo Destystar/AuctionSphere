@@ -30,7 +30,34 @@
   
     const maxTitleCharacters = 30;
     const maxDescriptionCharacters = 300;
-  
+    
+    async function uploadImage(event) {
+      let imageID = v4();
+      const file = event.target.files[0];
+      if (file && /\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
+          const storageRef = ref(storage, 'images/' + imageID);
+          const uploadTask = uploadBytesResumable(storageRef, file);
+          
+          uploadTask.on('state_changed',
+              (snapshot) => {
+                  const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                  console.log('Upload is ' + progress + '% done');
+              },
+              (error) => {
+                  console.log("error:-", error)
+              },
+              () => {
+                  getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    console.log('File available at', downloadURL);
+                    return downloadURL;
+                  });
+              }
+          );
+      } else {
+          alert('Please upload a valid JPEG or PNG image.');
+      }
+  }
+
     /**
     * @param {{ target: { files: any[]; }; }} event
     */
@@ -113,7 +140,7 @@
             listingID,
             sellerID: user.uid,
             title,
-            image,
+            imageURL: uploadImage(),
             price,
             selectedCurrency,
             end: calculateEnd(),
