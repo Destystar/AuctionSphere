@@ -14,6 +14,7 @@
     let price = '';
     let category = '';
     let selectedCurrency = 'GBP';
+    let highestBidderID = '';
     let duration = { days: 0, hours: 0, minutes: 0 };
   
     let submitting = false;
@@ -30,33 +31,37 @@
   
     const maxTitleCharacters = 30;
     const maxDescriptionCharacters = 300;
-    
-    async function uploadImage(event) {
+
+    async function uploadImage(file) {
+      if (!file) {
+          console.error('No file provided for upload.');
+          return;
+      }
       let imageID = v4();
-      const file = event.target.files[0];
-      if (file && /\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
+      if (/\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
           const storageRef = ref(storage, 'images/' + imageID);
           const uploadTask = uploadBytesResumable(storageRef, file);
-          
-          uploadTask.on('state_changed',
-              (snapshot) => {
-                  const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                  console.log('Upload is ' + progress + '% done');
-              },
-              (error) => {
-                  console.log("error:-", error)
-              },
-              () => {
-                  getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    console.log('File available at', downloadURL);
-                    return downloadURL;
-                  });
-              }
-          );
+
+          return new Promise((resolve, reject) => {
+              uploadTask.on('state_changed',
+                  (snapshot) => {
+                      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                      console.log('Upload is ' + progress + '% done');
+                  },
+                  (error) => {
+                      console.log("error:-", error)
+                      reject(error);
+                  },
+                  () => {
+                      getDownloadURL(uploadTask.snapshot.ref).then(resolve);
+                  }
+              );
+          });
       } else {
-          alert('Please upload a valid JPEG or PNG image.');
+          alert('Please upload a valid image file.');
       }
-  }
+    }
+
 
     /**
     * @param {{ target: { files: any[]; }; }} event
@@ -70,7 +75,7 @@
             };
             reader.readAsDataURL(file);
         } else {
-            alert('Please upload a valid JPEG or PNG image.');
+            alert('Please upload a valid image file.');
         }
     }
 
@@ -128,33 +133,38 @@
     async function handleSubmit() {
       submitting = true;
       try {
-        const user = auth.currentUser;
-        if (!user) {
-            console.error("You are not signed in");
-            return;
-        }
-        const listingsCol = collection(db, 'listings');
-        const listingID = v4();
-        // The data to be saved in database
-        const listingData = {
-            listingID,
-            sellerID: user.uid,
-            title,
-            imageURL: uploadImage(),
-            price,
-            selectedCurrency,
-            end: calculateEnd(),
-            description,
-        };
-        const listingDocRef = doc(listingsCol, listingID);
-        await setDoc(listingDocRef, listingData);
-    } catch (error) {
-        console.error("Error during form submission", error);
+          const user = auth.currentUser;
+          if (!user) {
+              console.error("You are not signed in");
+              return;
+          }
+          const listingsCol = collection(db, 'listings');
+          const listingID = v4();
+          const searchTerms = title + " " + description;
+          // The data to be saved in database
+          const listingData = {
+              listingID,
+              sellerID: user.uid,
+              title,
+              imageURL: await uploadImage(document.getElementById('yourFileInputId').files[0]), // replace 'yourFileInputId' with the actual id of your file input field
+              price,
+              currency: selectedCurrency,
+              end: calculateEnd(),
+              description,
+              searchTerms,
+              highestBidderID,
+          };
+          const listingDocRef = doc(listingsCol, listingID);
+          await setDoc(listingDocRef, listingData);
+      } catch (error) {
+          console.error("Error during form submission", error);
+      }
+      submitting = false;
+      goto('../dashboard');
     }
-    submitting = false;
-    goto('../dashboard');
-    }
-  </script>
+
+
+</script>
   
   <div class="max-w-md mt-20 mx-auto p-6 bg-white shadow-md rounded-md">
     <form on:submit={handleSubmit} class="flex flex-col items-center">
