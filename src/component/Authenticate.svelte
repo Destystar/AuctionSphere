@@ -94,14 +94,12 @@
             await authHandlers.signup(email, password);
             const unsubscribe = onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    // Use updateProfile to add the username
                     await updateProfile(user, { displayName: displayName });
-
-                    // Wait for a short time to allow updateProfile to take effect
+                    console.log("update username:" + {displayName} + "to the user: " + user.uid);
                     await new Promise(resolve => setTimeout(resolve, 1000));
 
                     // Check if the username is already taken
-                    const usernameQuerySnapshot = await getDocs(query(collection(db, 'user'), where('username', '==', displayName)));
+                    const usernameQuerySnapshot = await getDocs(query(collection(db, 'user'), where('displayName', '==', displayName)));
                     if (!usernameQuerySnapshot.empty) {
                         errorAuth = true;
                         errorValid = false;
@@ -110,16 +108,12 @@
                         alert('Username is already taken. Please choose another.');
                         return;
                     }
-
-                    // Assuming your collection is named 'user' (singular)
                     await setDoc(doc(db, 'user', user.uid), {
                         username: displayName,
                     }, { merge: true });
                 } else {
                     console.error("User not found after signup");
                 }
-
-                // Unsubscribe from the listener
                 unsubscribe();
             });
         }

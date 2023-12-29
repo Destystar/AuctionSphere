@@ -1,170 +1,190 @@
 <script>
-// @ts-nocheck
-
-    // @ts-ignore
-    import { v4 } from 'uuid';
-    import { doc, setDoc, collection } from 'firebase/firestore';
-    import { auth, db } from "$lib/firebase/firebase";
-    import { goto } from '$app/navigation';
-
-    let title = '';
-    // @ts-ignore
-    let image;
-    let description = '';
-    let price = '';
-    let category = '';
-    let selectedCurrency = 'GBP';
-    let highestBidderID = '';
-    let duration = { days: 0, hours: 0, minutes: 0 };
+  // @ts-nocheck
   
-    let submitting = false;
-
-    /**
-     * @param {{ target: { value: string; }; }} event
-     * @param {string | number} unit
-     */
-    function handleDurationInput(event, unit) {
-      const value = parseInt(event.target.value) || 0;
       // @ts-ignore
-      duration[unit] = value;
-    }
+      import { v4 } from 'uuid';
+      import { doc, setDoc, collection } from 'firebase/firestore';
+      import { auth, db, storage } from "$lib/firebase/firebase";
+      import { goto } from '$app/navigation';
+      import { removeStopwords, eng } from 'stopword';
+      import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
   
-    const maxTitleCharacters = 30;
-    const maxDescriptionCharacters = 300;
-
-    async function uploadImage(file) {
-      if (!file) {
-          console.error('No file provided for upload.');
-          return;
+      let title = '';
+      // @ts-ignore
+      let image;
+      let description = '';
+      let price = '';
+      let category = '';
+      let selectedCurrency = 'GBP';
+      let highestBidderID = '';
+      let duration = { days: 0, hours: 0, minutes: 0 };
+    
+      let submitting = false;
+  
+      /**
+       * @param {{ target: { value: string; }; }} event
+       * @param {string | number} unit
+       */
+      function handleDurationInput(event, unit) {
+        let value = parseInt(event.target.value) || 0;
+        if (value < 0) {
+          value = 0;
+        }
+        // @ts-ignore
+        duration[unit] = value;
       }
-      let imageID = v4();
-      if (/\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
-          const storageRef = ref(storage, 'images/' + imageID);
-          const uploadTask = uploadBytesResumable(storageRef, file);
-
-          return new Promise((resolve, reject) => {
-              uploadTask.on('state_changed',
-                  (snapshot) => {
-                      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                      console.log('Upload is ' + progress + '% done');
-                  },
-                  (error) => {
-                      console.log("error:-", error)
-                      reject(error);
-                  },
-                  () => {
-                      getDownloadURL(uploadTask.snapshot.ref).then(resolve);
-                  }
-              );
-          });
-      } else {
-          alert('Please upload a valid image file.');
+    
+      const maxTitleCharacters = 30;
+      const maxDescriptionCharacters = 300;
+  
+      const maxLengthPreprocess = 50;
+      const stopwords = eng;
+  
+      function preprocess(str) {
+        if (str.length > maxLengthPreprocess) {
+          str = str.substring(0, maxLengthPreprocess);
+        }
+        let words = str.toLowerCase().replace(/[^a-z\s]/gi, '').replace(/\s\s+/g, ' ').split(" ");
+        words = removeStopwords(words, stopwords);
+        if (words.length > 10) {
+          words = words.slice(0, 10);
+        }
+        let wordsNoDuplicates = [...new Set(words)];
+        return wordsNoDuplicates;
       }
-    }
-
-
-    /**
-    * @param {{ target: { files: any[]; }; }} event
-    */
-    function handleImageUpload(event) {
-        const file = event.target.files[0];
-        if (file && /\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
-            const reader = new FileReader();
-            reader.onload = () => {
-            image = reader.result;
-            };
-            reader.readAsDataURL(file);
+  
+  
+      async function uploadImage(file) {
+        if (!file) {
+            console.error('No file provided for upload.');
+            return;
+        }
+        let imageID = v4();
+        if (/\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
+            const storageRef = ref(storage, 'images/' + imageID);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+  
+            return new Promise((resolve, reject) => {
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                    },
+                    (error) => {
+                        console.log("error:-", error)
+                        reject(error);
+                    },
+                    () => {
+                        getDownloadURL(uploadTask.snapshot.ref).then(resolve);
+                    }
+                );
+            });
         } else {
             alert('Please upload a valid image file.');
         }
-    }
-
-    function updateTitleCount() {
-      const remainingCharacters = maxTitleCharacters - title.length;
-      console.log(`Remaining characters: ${remainingCharacters}`);
-    }
-
-    function updateDescriptionCount() {
-      const remainingCharacters = maxDescriptionCharacters - title.length;
-      console.log(`Remaining characters: ${remainingCharacters}`);
-    }
-
-    // @ts-ignore
-    function handleDescriptionInput(event) {
-      description = event.target.value.slice(0, maxDescriptionCharacters);
-      updateDescriptionCount();
-    }
-  
-    // @ts-ignore
-    function handleTitleInput(event) {
-      title = event.target.value.slice(0, maxTitleCharacters);
-      updateTitleCount();
-    }
-  
-    // @ts-ignore
-    function handlePriceInput(event) {
-      price = event.target.value.replace(/[^\d.]/g, '');
-      const parts = price.split('.');
-      if (parts.length > 1) {
-        parts[1] = parts[1].slice(0, 2);
-        price = parts.join('.');
       }
-    }
   
-    // @ts-ignore
-    function handleCurrencyChange(event) {
-      selectedCurrency = event.target.value;
-    }
-
-    function handleCategoryChange(event){
-      category = event.target.value;
-    }
-
-    // Function to calculate the end time
-    function calculateEnd() {
-        const currentDateTime = new Date();
-        const totalMilliseconds = duration.days * 24 * 60 * 60 * 1000 + duration.hours * 60 * 60 * 1000 + duration.minutes * 60 * 1000;
-        const endDateTime = new Date(currentDateTime.getTime() + totalMilliseconds);
-        return endDateTime;
-    }
-
   
-    // Function to handle form submission
-    async function handleSubmit() {
-      submitting = true;
-      try {
-          const user = auth.currentUser;
-          if (!user) {
-              console.error("You are not signed in");
-              return;
+      /**
+      * @param {{ target: { files: any[]; }; }} event
+      */
+      function handleImageUpload(event) {
+          const file = event.target.files[0];
+          if (file && /\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
+              const reader = new FileReader();
+              reader.onload = () => {
+              image = reader.result;
+              };
+              reader.readAsDataURL(file);
+          } else {
+              alert('Please upload a valid image file.');
           }
-          const listingsCol = collection(db, 'listings');
-          const listingID = v4();
-          const searchTerms = title + " " + description;
-          // The data to be saved in database
-          const listingData = {
-              listingID,
-              sellerID: user.uid,
-              title,
-              imageURL: await uploadImage(document.getElementById('yourFileInputId').files[0]), // replace 'yourFileInputId' with the actual id of your file input field
-              price,
-              currency: selectedCurrency,
-              end: calculateEnd(),
-              description,
-              searchTerms,
-              highestBidderID,
-          };
-          const listingDocRef = doc(listingsCol, listingID);
-          await setDoc(listingDocRef, listingData);
-      } catch (error) {
-          console.error("Error during form submission", error);
       }
-      submitting = false;
-      goto('../dashboard');
-    }
-
-
-</script>
+  
+      function updateTitleCount() {
+        const remainingCharacters = maxTitleCharacters - title.length;
+        console.log(`Remaining characters: ${remainingCharacters}`);
+      }
+  
+      function updateDescriptionCount() {
+        const remainingCharacters = maxDescriptionCharacters - title.length;
+        console.log(`Remaining characters: ${remainingCharacters}`);
+      }
+  
+      // @ts-ignore
+      function handleDescriptionInput(event) {
+        description = event.target.value.slice(0, maxDescriptionCharacters);
+        updateDescriptionCount();
+      }
+    
+      // @ts-ignore
+      function handleTitleInput(event) {
+        title = event.target.value.slice(0, maxTitleCharacters);
+        updateTitleCount();
+      }
+    
+      // @ts-ignore
+      function handlePriceInput(event) {
+        price = event.target.value.replace(/[^\d.]/g, '');
+        const parts = price.split('.');
+        if (parts.length > 1) {
+          parts[1] = parts[1].slice(0, 2);
+          price = parts.join('.');
+        }
+      }
+    
+      // @ts-ignore
+      function handleCurrencyChange(event) {
+        selectedCurrency = event.target.value;
+      }
+  
+      function handleCategoryChange(event){
+        category = event.target.value;
+      }
+  
+      // Function to calculate the end time
+      function calculateEnd() {
+          const currentDateTime = new Date();
+          const totalMilliseconds = duration.days * 24 * 60 * 60 * 1000 + duration.hours * 60 * 60 * 1000 + duration.minutes * 60 * 1000;
+          const endDateTime = new Date(currentDateTime.getTime() + totalMilliseconds);
+          return endDateTime;
+      }
+  
+    
+      // Function to handle form submission
+      async function handleSubmit() {
+        submitting = true;
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                console.error("You are not signed in");
+                return;
+            }
+            let searchTerms = title + " " + description;
+            const listingsCol = collection(db, 'listings');
+            const listingID = v4();
+            // The data to be saved in database
+            const listingData = {
+                listingID,
+                sellerID: user.uid,
+                title,
+                imageURL: await uploadImage(document.getElementById('imageInput').files[0]),
+                price,
+                currency: selectedCurrency,
+                end: calculateEnd(),
+                description,
+                searchTerms: preprocess(searchTerms),
+                highestBidderID,
+            };
+            const listingDocRef = doc(listingsCol, listingID);
+            await setDoc(listingDocRef, listingData);
+            goto('../dashboard');
+        } catch (error) {
+            console.error("Error during form submission", error);
+        }
+        submitting = false;
+      }
+  </script>
   
   <div class="max-w-md mt-20 mx-auto p-6 bg-white shadow-md rounded-md">
     <form on:submit={handleSubmit} class="flex flex-col items-center">

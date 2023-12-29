@@ -11,42 +11,59 @@
     const itemsPerPage = 10;
     let currentPage = 1;
     let category = "Any";
-  
-    const stopWords = ['a', 'an', 'and', 'the', 'in', 'of', 'with', 'for', 'on', 'at', 'by', 'to', 'from', 'as', 'is', 'are', 'was', 'were', 'it', 'that', 'this', 'these', 'those', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did'];
-  
-    async function fetchSearchResults() {
-        console.log("attempting search");
-        try {
-            const listingsCol = collection(db, 'listings');
-            // Stopword filtering
-            const words = searchQuery.split(' ');
-            const filteredWords = words.filter(word => !stopWords.includes(word));
-            const filteredQuery = filteredWords.join(' ');
 
-            let q;
-            if (category !== 'Any') {
-                q = query(
-                listingsCol,
-                where('category', '==', category),
-                where('searchTerms', '>=', filteredQuery),
-                orderBy('searchTerms'),
-                limit(itemsPerPage)
-                );
-            } else {
-                q = query(
-                listingsCol,
-                where('searchTerms', '>=', filteredQuery),
-                orderBy('searchTerms'),
-                limit(itemsPerPage)
-                );
-            }
+    const sw = require('stopword');
+    const stopwords = sw.english;
 
-            const querySnapshot = await getDocs(q);
-            searchResults = querySnapshot.docs.map(doc => doc.data());
-        } catch (error) {
-            console.error('Error fetching search results:', error);
-        }
+    /**
+     * @param {string} str
+     * @param {string | any[]} stopwords
+     */
+    function removeStopwordsFromString(str, stopwords) {
+      let words = str.split(" ");
+      words = words.filter((/** @type {any} */ word) => !stopwords.includes(word));
+      return words;
     }
+
+    async function fetchSearchResults() {
+      console.log("attempting search");
+      try {
+          const listingsCol = collection(db, 'listings');
+          // Stopword filtering
+          let searchQueryArray = removeStopwordsFromString(searchQuery, stopwords)
+
+          /**
+           * @type {any[]}
+           */
+          let allResults = [];
+          for (let word of searchQueryArray) {
+              let q;
+              if (category !== 'Any') {
+                  q = query(
+                  listingsCol,
+                  where('category', '==', category),
+                  where('searchTerms', '>=', word),
+                  orderBy('searchTerms'),
+                  limit(itemsPerPage)
+                  );
+              } else {
+                  q = query(
+                  listingsCol,
+                  where('searchTerms', '>=', word),
+                  orderBy('searchTerms'),
+                  limit(itemsPerPage)
+                  );
+              }
+              const querySnapshot = await getDocs(q);
+              allResults = [...allResults, ...querySnapshot.docs.map(doc => doc.data())];
+          }
+          // Remove duplicates
+          searchResults = Array.from(new Set(allResults.map(item => JSON.stringify(item)))).map(item => JSON.parse(item));
+      } catch (error) {
+          console.error('Error fetching search results:', error);
+      }
+    }
+
 
   
     // @ts-ignore

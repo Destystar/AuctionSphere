@@ -74,15 +74,15 @@
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <!-- svelte-ignore a11y-mouse-events-have-key-events -->
             <div>
-                <a href="../main/dashboard" class="flex items-center text-xl">
+                <a href="/main/dashboard" class="flex items-center text-xl">
                     <img class="h-8 mr-2" src={mainIcon} alt="Go to the HomePage">
                     <span class="text-slate-200">Dashboard</span>
                 </a>
             </div>
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div class="flex items-center space-x-3">
-                <a href="../main/search" class="text-slate-300 hover:text-ghost transition text-md">Search</a>
-                <a href="../main/discover" class="text-slate-300 hover:text-white transition text-md">Discover</a>
+                <a href="/main/search" class="text-slate-300 hover:text-ghost transition text-md">Search</a>
+                <a href="/main/discover" class="text-slate-300 hover:text-white transition text-md">Discover</a>
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="relative" on:click={showProfileDropdown}>
                     <button class="text-slate-200 hover:text-white focus:outline-none transition text-2xl">
