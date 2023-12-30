@@ -46,10 +46,10 @@
         }
         let words = str.toLowerCase().replace(/[^a-z\s]/gi, '').replace(/\s\s+/g, ' ').split(" ");
         words = removeStopwords(words, stopwords);
-        if (words.length > 10) {
-          words = words.slice(0, 10);
-        }
         let wordsNoDuplicates = [...new Set(words)];
+        if (wordsNoDuplicates.length > 10) {
+          wordsNoDuplicates = wordsNoDuplicates.slice(0, 10);
+        }
         return wordsNoDuplicates;
       }
   

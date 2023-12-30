@@ -42,14 +42,14 @@
                   q = query(
                   listingsCol,
                   where('category', '==', category),
-                  where('searchTerms', '>=', word),
+                  where(word, 'in', 'searchTerms'),
                   orderBy('searchTerms'),
                   limit(itemsPerPage)
                   );
               } else {
                   q = query(
                   listingsCol,
-                  where('searchTerms', '>=', word),
+                  where(word, 'in', 'searchTerms'),
                   orderBy('searchTerms'),
                   limit(itemsPerPage)
                   );
