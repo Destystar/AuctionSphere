@@ -157,13 +157,13 @@
       {#each searchResults as result (result.id)}
       <div class="bg-gray-100 p-4 mb-2 rounded-md w-full flex justify-between items-center">
         <div>
+          {result.title}
           <!-- svelte-ignore a11y-img-redundant-alt -->
           <img src="{result.imageUrl}" class="w-full h-auto rounded-md" alt="Listing image" />
           <p>{result.description}</p>
-          {result.title}
         </div>
         <div>
-          <p>{calculateTimeLeft(new Date(result.end))}</p> <!-- Calculate and display the time left here -->
+          <p>Time Left: {calculateTimeLeft(new Date(result.end))}</p> <!-- Calculate and display the time left here -->
         </div>
       </div>
       {/each}
