@@ -1,9 +1,11 @@
 <script>
+    //#region imports
     import { onMount } from 'svelte';
     import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
     import { db, storage } from "$lib/firebase/firebase";
     import { getDownloadURL, ref } from "firebase/storage";
-
+    import { eng } from 'stopword';
+  //#endregion
   
     let searchQuery = '';
     /**
@@ -14,8 +16,7 @@
     let currentPage = 1;
     let category = "Any";
 
-    const sw = require('stopword');
-    const stopwords = sw.english;
+    const stopwords = eng;
 
     /**
      * @param {string | undefined} imagePath
@@ -26,6 +27,37 @@
       return imageUrl;
     }
 
+    //#region mergesort algorithm
+
+    // @ts-ignore
+    function mergeSort(arr) {
+      if (arr.length <= 1) {
+        return arr;
+      }
+
+      const mid = Math.floor(arr.length / 2);
+      // @ts-ignore
+      const left = mergeSort(arr.slice(0, mid));
+      // @ts-ignore
+      const right = mergeSort(arr.slice(mid));
+
+      let result = [];
+      let leftIndex = 0;
+      let rightIndex = 0;
+
+      while (leftIndex < left.length && rightIndex < right.length) {
+        if (left[leftIndex].title < right[rightIndex].title) {
+          result.push(left[leftIndex]);
+          leftIndex++;
+        } else {
+          result.push(right[rightIndex]);
+          rightIndex++;
+        }
+      }
+
+      return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
+    }
+    //#endregion
 
     /**
      * @param {string} str
@@ -58,45 +90,47 @@
     async function fetchSearchResults() {
       console.log("attempting search");
       try {
-          const listingsCol = collection(db, 'listings');
-          // Stopword filtering
-          let searchQueryArray = removeStopwordsFromString(searchQuery, stopwords)
+        const listingsCol = collection(db, 'listings');
+        // Stopword filtering
+        let searchQueryArray = removeStopwordsFromString(searchQuery, stopwords)
+        console.log(searchQueryArray);
+        /**
+          * @type {any[]}
+          */
+        let allResults = [];
 
-          /**
-           * @type {any[]}
-           */
-          let allResults = [];
-          for (let word of searchQueryArray) {
-              let q;
-              if (category !== 'Any') {
-                  q = query(
-                  listingsCol,
-                  where('category', '==', category),
-                  where(word, 'in', 'searchTerms'),
-                  orderBy('searchTerms'),
-                  limit(itemsPerPage)
-                  );
-              } else {
-                  q = query(
-                  listingsCol,
-                  where(word, 'in', 'searchTerms'),
-                  orderBy('searchTerms'),
-                  limit(itemsPerPage)
-                  );
-              }
-              const querySnapshot = await getDocs(q);
-              const docsWithImages = querySnapshot.docs.map(doc => {
-                const data = doc.data();
-                return { ...data, imageUrl: data.imageURL }; // Access imageURL field directly
-              });
-              allResults = [...allResults, ...docsWithImages];
+        // Search by term
+        let qSearchTerm = query(
+          listingsCol,
+          where('searchTerms', 'array-contains-any', searchQueryArray),
+          limit(itemsPerPage)
+        );
+        const querySnapshot = await getDocs(qSearchTerm);
+        const docsWithImages = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return { ...data, imageUrl: data.imageURL }; // Access imageURL field directly
+        });
+        allResults = [...allResults, ...docsWithImages];
+        // Filter by category
+        if (category !== 'Any') {
+          allResults = allResults.filter(result => result.category === category);
+        }
+        // Remove duplicates
+        searchResults = Array.from(new Set(allResults.map(item => JSON.stringify(item)))).map(item => JSON.parse(item));
+        console.log(searchResults.length);
+
+        for (let i = 0; i < searchResults.length; i++) {
+          if (!searchResults[i].hasOwnProperty('title')) {
+            throw new Error('All objects must have a title property');
           }
-          // Remove duplicates
-          searchResults = Array.from(new Set(allResults.map(item => JSON.stringify(item)))).map(item => JSON.parse(item));
+        }
+        searchResults = mergeSort(searchResults);
+        return searchResults;
       } catch (error) {
-          console.error('Error fetching search results:', error);
+        console.error('Error fetching search results:', error);
       }
     }
+
 
 
   
@@ -125,10 +159,10 @@
 
   
     onMount(fetchSearchResults);
-  </script>
+</script>
   
   
-  <div class="min-h-screen bg-gray-100 py-4 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-100 py-4 px-4 sm:px-6 lg:px-8">
   <div class="container mx-auto flex justify-center space-x-4">
     <input type="text" bind:value={searchQuery} placeholder="Search..." class="w-1/2 px-2 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" on:keydown={handleKeyDown} />
     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" on:click={handleSearch}>Search</button>
@@ -163,7 +197,8 @@
           <p>{result.description}</p>
         </div>
         <div>
-          <p>Time Left: {calculateTimeLeft(new Date(result.end))}</p> <!-- Calculate and display the time left here -->
+          <p>Time Left: {calculateTimeLeft(new Date(result.end))}</p> 
+          <p>Current Price: {result.price}</p>
         </div>
       </div>
       {/each}
