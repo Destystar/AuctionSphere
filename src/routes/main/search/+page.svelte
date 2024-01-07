@@ -63,6 +63,7 @@
     let endDate = new Date(time.seconds * 1000 + time.nanoseconds / 1000000);
     let currentTime = new Date();
     let diff = endDate.getTime() - currentTime.getTime();
+    console.log(diff);
 
     if (diff <= 0) {
       return $timers[id] = 'Listing Ended';
@@ -124,7 +125,7 @@
       console.log(searchResults.length);
 
       for (let i = 0; i < searchResults.length; i++) {
-        $timers[[searchResults[i].id]] = calculateTimeLeft(searchResults[i].end, searchResults[i].id);
+        $timers[[searchResults[i].id]] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
         if (!searchResults[i].hasOwnProperty('title')) {
           throw new Error('All objects must have a title property');
         }
@@ -157,60 +158,60 @@
   }
 
   async function handleBid(price, result){
- console.log("Running handleBid: " + price + result.listingID);
- let userAmount = 0;
- const usersRef = collection(db, 'user');
- let userQuery = query(usersRef, where('email', '==', user.email));
+    console.log("Running handleBid: " + price + result.listingID);
+    let userAmount = 0;
+    const usersRef = collection(db, 'user');
+    let userQuery = query(usersRef, where('email', '==', user.email));
 
- const userSnap = await getDocs(userQuery);
- console.log("User snapshot: ", userSnap);
- if (!userSnap.empty) {
-     const userDoc = userSnap.docs[0];
-     console.log("User document: ", userDoc);
-     switch(displayCurrency) {
-         case "GBP":
-             userAmount = userDoc.data().GBP;
-             break;
-         case "EUR":
-             userAmount = userDoc.data().EUR;
-             break;
-         case "USD":
-             userAmount = userDoc.data().USD;
-             break;
-         case "JPY":
-             userAmount = userDoc.data().JPY;
-             break;
-         default:
-             console.log('Invalid currency type');
-     }
- }
- console.log("User amount: ", userAmount);
- if (userAmount >= price) {
-     await runTransaction(db, async (transaction) => {
-         const bidRef = doc(db, 'bids', `${user.uid}_${result.listingID}`);
-         const listingRef = doc(db, 'listings', result.listingID);
+    const userSnap = await getDocs(userQuery);
+    console.log("User snapshot: ", userSnap);
+    if (!userSnap.empty) {
+        const userDoc = userSnap.docs[0];
+        console.log("User document: ", userDoc);
+        switch(displayCurrency) {
+            case "GBP":
+                userAmount = userDoc.data().GBP;
+                break;
+            case "EUR":
+                userAmount = userDoc.data().EUR;
+                break;
+            case "USD":
+                userAmount = userDoc.data().USD;
+                break;
+            case "JPY":
+                userAmount = userDoc.data().JPY;
+                break;
+            default:
+                console.log('Invalid currency type');
+        }
+    }
+    console.log("User amount: ", userAmount);
+    if (userAmount >= price) {
+        await runTransaction(db, async (transaction) => {
+            const bidRef = doc(db, 'bids', `${user.uid}_${result.listingID}`);
+            const listingRef = doc(db, 'listings', result.listingID);
 
-         const listingSnapshot = await transaction.get(listingRef);
-         const listingData = listingSnapshot.data();
+            const listingSnapshot = await transaction.get(listingRef);
+            const listingData = listingSnapshot.data();
 
-         console.log("Listing data: ", listingData);
-         if (price > listingData.price) {
-             // Update the listing with the new price and highest bidder id
-             transaction.update(listingRef, {
-               highestBidderID: user.uid,
-               price: price,
-             });
-             // Document in Bids created
-             await setDoc(bidRef, {
-               bidderID: user.uid,
-               listingID: result.listingID,
-               amount: price,
-             }, { merge: true });
-         } else {
-             console.log("Your bid is not high enough!");
-         }
-     });
- }
+            console.log("Listing data: ", listingData);
+            if (price > listingData.price) {
+                // Update the listing with the new price and highest bidder id
+                transaction.update(listingRef, {
+                  highestBidderID: user.uid,
+                  price: price,
+                });
+                // Document in Bids created
+                await setDoc(bidRef, {
+                  bidderID: user.uid,
+                  listingID: result.listingID,
+                  amount: price,
+                }, { merge: true });
+            } else {
+                console.log("Your bid is not high enough!");
+            }
+        });
+    }
 }
 
 
