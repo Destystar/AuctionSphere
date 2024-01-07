@@ -38,6 +38,10 @@
                 dataToSetToStore = {
                     email: user.email,
                     username: user.displayName,
+                    GBP: 100,
+                    EUR: 0,
+                    USD: 0,
+                    JPY: 0,
                 }
                 await setDoc(
                     userRef,
