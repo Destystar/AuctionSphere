@@ -120,6 +120,11 @@
       }
       // Filter by currency
       allResults = allResults.filter(result => result.currency === displayCurrency);
+      // Filter out results where the sellerID is user ID
+      /*
+         uncomment in final build
+      */
+      // allResults = allResults.filter(result => result.sellerID === user.uid);
       // Remove duplicates
       searchResults = Array.from(new Set(allResults.map(item => JSON.stringify(item)))).map(item => JSON.parse(item));
       console.log(searchResults.length);
