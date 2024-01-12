@@ -12,13 +12,8 @@
     let searchResults = [];
     const itemsPerPage = 10;
     let currentPage = 1;
-    let bidValue;
-    let category = "Any";
-    let displayCurrency = "GBP";
     let timers = writable({});
-    let bids = writable({});
-    const stopwords = eng;
-    let currencySymbol = "£";
+    let numBids = writable({});
     const user = auth.currentUser;
 
     onMount(fetchSearchResults);
@@ -87,7 +82,7 @@
             const bidCol = collection(db, 'bids');
             const q = query(bidCol, where('listingID', '==', listingID));
             const snapshot = await getCountFromServer(q);
-            return snapshot.data().count;
+            numBids[listingID] = snapshot.data().count;
         } catch (error) {
             console.error('Error fetching search results:', error);
         }
@@ -118,6 +113,7 @@
 
             for (let i = 0; i < searchResults.length; i++) {
                 $timers[[searchResults[i].id]] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
+                getNumBids(searchResults[i].listingID);
                 if (!searchResults[i].hasOwnProperty('title')) {
                     throw new Error('All objects must have a title property');
                 }
@@ -187,7 +183,7 @@
               </div>
               <div class="ml-4">
                 <dt class="text-m font-medium text-gray-500">There are Currently:</dt>
-                <dd class="mt-1 text-m font-bold text-blue-700">{getNumBids(result.listingID)} bids</dd>
+                <dd class="mt-1 text-m font-bold text-blue-700">{numBids[result.listingID]} bids</dd>
               </div>
             </div>
           </div>   
