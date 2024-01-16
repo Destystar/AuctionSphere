@@ -10,6 +10,7 @@
 
   let searchQuery = '';
   let searchResults = [];
+  let searching = false;
   const itemsPerPage = 10;
   let currentPage = 1;
   let bidValue;
@@ -95,6 +96,8 @@
 
   async function fetchSearchResults() {
     console.log("attempting search");
+    searching = true;
+    console.log(searching);
     try {
       const listingsCol = collection(db, 'listings');
       // Stopword filtering
@@ -132,6 +135,8 @@
       }
       
       searchResults = mergeSort(searchResults);
+      searching = false;
+      console.log(searching);
       return searchResults;
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -230,15 +235,19 @@
       }
   }
 
-
-  onMount(fetchSearchResults);
 </script>
 
 
 <div class="min-h-screen bg-gray-100 py-4 px-4 sm:px-6 lg:px-8">
 <div class="container mx-auto flex justify-center space-x-4">
   <input type="text" bind:value={searchQuery} placeholder="Search..." class="w-1/2 px-2 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" on:keydown={handleKeyDown} />
-  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" on:click={handleSearch}>Search</button>
+  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" on:click={handleSearch}>
+  {#if searching}
+    <i class="fas fa-spinner fa-pulse"></i>
+  {:else}
+    Search
+  {/if}
+  </button>
   <!-- Category dropdown -->
   <select id="category" bind:value={category} on:change={handleCategoryChange} class="w-1/16 shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
       <option value="Any">Any</option>

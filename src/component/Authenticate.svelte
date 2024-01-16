@@ -209,7 +209,7 @@
         <div on:click={handleAuthenticate} class="flex items-center justify-center">
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
                 {#if authenticating}
-                <i class="fas fa-spinner fa-pulse"></i>
+                    <i class="fas fa-spinner fa-pulse"></i>
                 {:else}
                     {register ? "Create Account" : "Login"}
                 {/if}
