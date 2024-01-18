@@ -1,6 +1,9 @@
 <script>
+// @ts-nocheck
+
     import { auth, db } from "$lib/firebase/firebase";
     import { authHandlers } from "../store/store";
+    import { getCountryDataList } from 'countries-list';
     import CryptoJS from "crypto-js";
     import { updateProfile, onAuthStateChanged } from "firebase/auth";
     import { doc, setDoc, collection, getDocs, query, where } from "firebase/firestore";
@@ -10,6 +13,11 @@
     let password = "";
     let confirmPassword = "";
     let displayName = "";
+
+    // address variables
+    let lineone;
+    let postcode;
+    let country;
 
     // error variables 
     let errorAuth = false;
@@ -76,6 +84,14 @@
         return;
     }
 
+    function validatePassword(){
+        if ( isLengthValid && isLowercaseValid && isNumberValid && isUppercaseValid && isSpecialCharacterValid){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     authenticating = true;
     errorAuth = false;
     errorLack = false;
@@ -91,13 +107,23 @@
                 errorLack = true;
             }
         } else {
+            console.log("address: " + lineone + " Postcode: " + postcode + " Country: " + country)
+            console.log("starting signup");
             await authHandlers.signup(email, password);
             const unsubscribe = onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    await updateProfile(user, { displayName: displayName });
+                    console.log("after if");
+                    updateProfile(user, { displayName: displayName });
+                    await setDoc(doc(db, 'user', user.uid), {
+                            username: displayName,
+                            address: lineone,
+                            postcode: postcode,
+                            country: country,
+                        }, { merge: true });
+                        consolelog("successfully updated document");
                     console.log("update username:" + {displayName} + "to the user: " + user.uid);
                     await new Promise(resolve => setTimeout(resolve, 1000));
-
+                    console.log("before username");
                     // Check if the username is already taken
                     const usernameQuerySnapshot = await getDocs(query(collection(db, 'user'), where('displayName', '==', displayName)));
                     if (!usernameQuerySnapshot.empty) {
@@ -108,9 +134,19 @@
                         alert('Username is already taken. Please choose another.');
                         return;
                     }
-                    await setDoc(doc(db, 'user', user.uid), {
-                        username: displayName,
-                    }, { merge: true });
+                    console.log("before try");
+                    try{
+                        console.log("trying await");
+                        await setDoc(doc(db, 'user', user.uid), {
+                            username: displayName,
+                            address: lineone,
+                            postcode: postcode,
+                            country: country,
+                        }, { merge: true });
+                        consolelog("successfully updated document");
+                    } catch (error) {
+                        console.error(error);
+                    }
                 } else {
                     console.error("User not found after signup");
                 }
@@ -194,7 +230,7 @@
             </p>
         </div>        
         {/if}
-        <!-- Confirm Password -->
+        <!-- Confirm Password and address -->
         {#if register}
             <div class="flex flex-col">
                 <label class="text-gray-700 text-sm font-bold mb-2 flex items-center">
@@ -202,6 +238,29 @@
                     <input bind:value={confirmPassword} class="shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-1 ml-2" id="password" type="password" placeholder="Confirm password">
                 </label>
             </div>
+            <div class="flex flex-col">
+                <label class="text-gray-700 text-sm font-bold mb-2 flex items-center">
+                    <span class="w-3/12">First Line of Address</span>
+                    <input bind:value={lineone} class="shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-1 ml-2" id="lineone" type="text" placeholder="Enter the first line of your address">
+                </label>
+            </div>
+            <div>
+                <label class="text-gray-700 text-sm font-bold mb-2 flex items-center">
+                    <span class="w-3/12">Postcode</span>
+                    <input bind:value={postcode} class="shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-1 ml-2" id="postcode" type="text" placeholder="Enter Postcode">
+                </label> 
+            </div>
+            <div>
+                <label class="text-gray-700 text-sm w-full font-bold mb-2 flex items-center">
+                    <select bind:value={country} class="shadow appearance-none border rounded py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ml-2" id="country" type="text" placeholder="Select Country">
+                        <option>Select Country</option>
+                        {#each getCountryDataList() as country (country.name)}
+                            <option value={country.name}>{country.name}</option>
+                        {/each}
+                    </select>
+                </label> 
+            </div>
+
         {/if}
 
         <!-- Buttons -->
