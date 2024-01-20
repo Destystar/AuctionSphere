@@ -107,51 +107,53 @@
                 errorLack = true;
             }
         } else {
-            console.log("address: " + lineone + " Postcode: " + postcode + " Country: " + country)
-            console.log("starting signup");
-            await authHandlers.signup(email, password);
-            const unsubscribe = onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    console.log("after if");
-                    updateProfile(user, { displayName: displayName });
-                    await setDoc(doc(db, 'user', user.uid), {
-                            username: displayName,
-                            address: lineone,
-                            postcode: postcode,
-                            country: country,
-                        }, { merge: true });
-                        consolelog("successfully updated document");
-                    console.log("update username:" + {displayName} + "to the user: " + user.uid);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    console.log("before username");
-                    // Check if the username is already taken
-                    const usernameQuerySnapshot = await getDocs(query(collection(db, 'user'), where('displayName', '==', displayName)));
-                    if (!usernameQuerySnapshot.empty) {
-                        errorAuth = true;
-                        errorValid = false;
-                        errorMatch = false;
-                        errorLack = false;
-                        alert('Username is already taken. Please choose another.');
-                        return;
-                    }
-                    console.log("before try");
-                    try{
-                        console.log("trying await");
+            if (validatePassword()) {
+                await authHandlers.signup(email, password);
+                const unsubscribe = onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        console.log("after if");
+                        updateProfile(user, { displayName: displayName });
                         await setDoc(doc(db, 'user', user.uid), {
-                            username: displayName,
-                            address: lineone,
-                            postcode: postcode,
-                            country: country,
-                        }, { merge: true });
-                        consolelog("successfully updated document");
-                    } catch (error) {
-                        console.error(error);
+                                username: displayName,
+                                address: lineone,
+                                postcode: postcode,
+                                country: country,
+                            }, { merge: true });
+                            consolelog("successfully updated document");
+                        console.log("update username:" + {displayName} + "to the user: " + user.uid);
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        console.log("before username");
+                        // Check if the username is already taken
+                        const usernameQuerySnapshot = await getDocs(query(collection(db, 'user'), where('displayName', '==', displayName)));
+                        if (!usernameQuerySnapshot.empty) {
+                            errorAuth = true;
+                            errorValid = false;
+                            errorMatch = false;
+                            errorLack = false;
+                            alert('Username is already taken. Please choose another.');
+                            return;
+                        }
+                        console.log("before try");
+                        try{
+                            console.log("trying await");
+                            await setDoc(doc(db, 'user', user.uid), {
+                                username: displayName,
+                                address: lineone,
+                                postcode: postcode,
+                                country: country,
+                            }, { merge: true });
+                            consolelog("successfully updated document");
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    } else {
+                        console.error("User not found after signup");
                     }
-                } else {
-                    console.error("User not found after signup");
-                }
-                unsubscribe();
-            });
+                    unsubscribe();
+                });
+            } else {
+                alert("Your password is invalid");
+            }
         }
     } catch (error) {
         console.log("Auth error occurred", error);
