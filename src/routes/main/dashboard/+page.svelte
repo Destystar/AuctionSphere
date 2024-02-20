@@ -1,13 +1,13 @@
 <script>
+// @ts-nocheck
+
     import Dashboard from "../../../component/Dashboard.svelte";
     import "../../../app.css";
     import { writable } from "svelte/store";
     import { auth } from "$lib/firebase/firebase";
     import { onMount } from "svelte";
+    import { handleExpiredListings } from "$lib/firebase/expired"
 
-    /**
-     * @type {import("@firebase/auth").User | null}
-     */
     let user;
 
     onMount(async () => {
@@ -15,6 +15,7 @@
             await new Promise(resolve => setTimeout(resolve, 100)); // wait for 100ms
         }
         user = auth.currentUser;
+        handleExpiredListings();
     });
 
 </script>
