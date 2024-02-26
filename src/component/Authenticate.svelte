@@ -4,7 +4,6 @@
     import { auth, db } from "$lib/firebase/firebase";
     import { authHandlers } from "../store/store";
     import { getCountryDataList } from 'countries-list';
-    import CryptoJS from "crypto-js";
     import { updateProfile, onAuthStateChanged } from "firebase/auth";
     import { doc, setDoc, collection, getDocs, query, where } from "firebase/firestore";
 
@@ -36,13 +35,6 @@
     let isNumberValid = false;
     let isSpecialCharacterValid = false;
 
-    /**
-     * @param {any} input
-     * @param {any} key
-     */
-    function encrypt(input, key) {
-        return CryptoJS.AES.encrypt(input, key).toString();
-    }
 
     // @ts-ignore
     function handlePasswordInput(event) {
@@ -55,22 +47,18 @@
     }
 
     // @ts-ignore
-    function updateRequirement(passwordInput, isValid) {
-        if (passwordInput === 'length') {
+    function updateRequirement(type, isValid) {
+        if (type === 'length') {
             isLengthValid = isValid;
-        } else if (passwordInput === 'lowercase') {
+        } else if (type === 'lowercase') {
             isLowercaseValid = isValid;
-        } else if (passwordInput === 'uppercase') {
+        } else if (type === 'uppercase') {
             isUppercaseValid = isValid;
-        } else if (passwordInput === 'number') {
+        } else if (type === 'number') {
             isNumberValid = isValid;
-        } else if (passwordInput === 'characters') {
+        } else if (type === 'characters') {
             isSpecialCharacterValid = isValid;
         }
-    }
-
-    function checkValid() {
-        return isLengthValid && isLowercaseValid && isUppercaseValid && isNumberValid && isSpecialCharacterValid;
     }
 
     async function handleAuthenticate() {
