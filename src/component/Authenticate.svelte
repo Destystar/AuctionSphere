@@ -55,16 +55,16 @@
     }
 
     // @ts-ignore
-    function updateRequirement(id, isValid) {
-        if (id === 'length') {
+    function updateRequirement(passwordInput, isValid) {
+        if (passwordInput === 'length') {
             isLengthValid = isValid;
-        } else if (id === 'lowercase') {
+        } else if (passwordInput === 'lowercase') {
             isLowercaseValid = isValid;
-        } else if (id === 'uppercase') {
+        } else if (passwordInput === 'uppercase') {
             isUppercaseValid = isValid;
-        } else if (id === 'number') {
+        } else if (passwordInput === 'number') {
             isNumberValid = isValid;
-        } else if (id === 'characters') {
+        } else if (passwordInput === 'characters') {
             isSpecialCharacterValid = isValid;
         }
     }
