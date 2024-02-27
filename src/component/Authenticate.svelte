@@ -100,15 +100,15 @@
                 const unsubscribe = onAuthStateChanged(auth, async (user) => {
                     if (user) {
                         console.log("after if");
-                        updateProfile(user, { displayName: displayName });
-                        await setDoc(doc(db, 'user', user.uid), {
-                                username: displayName,
-                                address: lineone,
-                                postcode: postcode,
-                                country: country,
-                            }, { merge: true });
-                            consolelog("successfully updated document");
-                        console.log("update username:" + {displayName} + "to the user: " + user.uid);
+                        // updateProfile(user, { displayName: displayName });
+                        // await setDoc(doc(db, 'user', user.uid), {
+                        //         username: displayName,
+                        //         address: lineone,
+                        //         postcode: postcode,
+                        //         country: country,
+                        //     }, { merge: true });
+                        //     consolelog("successfully updated document");
+                        // console.log("update username:" + {displayName} + "to the user: " + user.uid);
                         await new Promise(resolve => setTimeout(resolve, 1000));
                         console.log("before username");
                         // Check if the username is already taken
