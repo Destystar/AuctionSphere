@@ -121,6 +121,12 @@
       if (category !== 'Any') {
         allResults = allResults.filter(result => result.category === category);
       }
+      // Removes expired items
+      allResults = allResults.filter(result => {
+        const endDate = result.end.toDate();
+        const currentDate = new Date();
+        return endDate > currentDate;
+      })
       // Filter by currency
       allResults = allResults.filter(result => result.currency === displayCurrency);
       // Remove duplicates
