@@ -126,6 +126,8 @@
       // Remove duplicates
       searchResults = Array.from(new Set(allResults.map(item => JSON.stringify(item)))).map(item => JSON.parse(item));
       console.log(searchResults.length);
+      // Removes results posted by seller
+      allResults = allResults.filter(result => result.sellerID !== user.uid);
 
       for (let i = 0; i < searchResults.length; i++) {
         $timers[[searchResults[i].id]] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
