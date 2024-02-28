@@ -82,7 +82,6 @@
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div class="flex items-center space-x-3">
                 <a href="/main/search" class="text-slate-300 hover:text-ghost transition text-md">Search</a>
-                <a href="/main/discover" class="text-slate-300 hover:text-white transition text-md">Discover</a>
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="relative" on:click={showProfileDropdown}>
                     <button class="text-slate-200 hover:text-white focus:outline-none transition text-2xl">
