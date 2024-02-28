@@ -1,17 +1,34 @@
 // @ts-nocheck
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 import { deleteApp, getApp, getApps, initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { getStorage, ref, deleteObject } from "firebase/storage";
  
  // Email set up
- let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'auctionsphereautomated@gmail.com',
-        pass: '#AuctionSpherePass'
+ sgMail.setApiKey(import.meta.env.SENDGRID_API_KEY);
+
+// Function to send an email
+async function sendEmail(reciever, sub, mainEmail) {
+    const response = await fetch('/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: reciever,
+        from: 'auctionsphereautomated@gmail.com',
+        subject: sub,
+        text: mainEmail,
+      }),
+    });
+
+    if (response.ok) {
+      console.log('Email sent successfully');
+    } else {
+      console.error('Failed to send email');
     }
-});
+ }
+
 async function getUserEmail(userID, seller) {
     if (seller) {
         const userRef = doc(db, 'user', userID);
@@ -94,48 +111,13 @@ function handleExpiredListings(){
         let buyerEmail = getUserEmail(listing.highestBidderID, false)
         // If item was sold
         if (buyerEmail != false) {
-            let mailContentSeller = {
-                from: 'auctionsphereautomated@gmail.com',
-                to: sellerEmail,
-                subject: 'Your Item Has Been Sold',
-                text: `please send ${listing.title} to \n ${getBuyerLocation(listing.highestBidderID)}\n \nDo not reply to this email as it is an automated email`,
-            } 
-            transporter.sendMail(mailContentSeller, function(error, info){
-            if(error) {
-                console.log(error);
-            } else {
-                console.log('Email Sent: ' + info.response);
-            }
-            });
-
-            let mailContentBuyer = {
-                from: 'auctionsphereautomated@gmail.com',
-                to: buyerEmail,
-                subject: 'Congratulations on your purchase',
-                text: `you have bought ${listing.title} for ${listing.price}\n \nDo not reply to this email as it is an automated email`,
-            } 
-            transporter.sendMail(mailContentBuyer, function(error, info){
-            if(error) {
-                console.log(error);
-            } else {
-                console.log('Email Sent: ' + info.response);
-            }
-            });
+            // Sends the seller an email
+            sendEmail(sellerEmail, 'Your Item Has Been Sold', `please send ${listing.title} to \n ${getBuyerLocation(listing.highestBidderID)}\n \nDo not reply to this email as it is an automated email`);
+            // Sends the buyer an email
+            sendEmail(buyerEmail, 'Congratulations on your purchase', `you have bought ${listing.title} for ${listing.price}\n \nDo not reply to this email as it is an automated email`);
         } else {
             // Expired listing
-            let mailContentSeller = {
-                from: 'auctionsphereautomated@gmail.com',
-                to: sellerEmail,
-                subject: 'Your Listing has Expired',
-                text: `Your listing: ${listing.title} has expired\n \nDo not reply to this email as it is an automated email`,
-            } 
-            transporter.sendMail(mailContentSeller, function(error, info){
-            if(error) {
-                console.log(error);
-            } else {
-                console.log('Email Sent: ' + info.response);
-            }
-            });
+            sendEmail(sellerEmail, 'Your Listing has Expired', `Your listing: ${listing.title} has expired\n \nDo not reply to this email as it is an automated email`);
         }
         // Deletes the image from storage
         deleteImage(listing.imageURL);
