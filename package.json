@@ -34,7 +34,7 @@
 		"firebase": "^10.7.1",
 		"luxon": "^3.4.4",
 		"node-fetch": "^3.3.2",
-		"nodemailer": "^6.9.9",
+		"nodemailer": "^6.9.10",
 		"stopword": "^2.0.8",
 		"stopwords": "^0.0.9",
 		"svelte-kit": "^1.2.0",
