@@ -100,30 +100,10 @@
                 const unsubscribe = onAuthStateChanged(auth, async (user) => {
                     if (user) {
                         console.log("after if");
-                        updateProfile(user, { displayName: displayName });
-                        await setDoc(doc(db, 'user', user.uid), {
-                                username: displayName,
-                                address: lineone,
-                                postcode: postcode,
-                                country: country,
-                            }, { merge: true });
-                            consolelog("successfully updated document");
-                        console.log("update username:" + {displayName} + "to the user: " + user.uid);
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        console.log("before username");
-                        // Check if the username is already taken
+                        // username check
                         const usernameQuerySnapshot = await getDocs(query(collection(db, 'user'), where('displayName', '==', displayName)));
-                        if (!usernameQuerySnapshot.empty) {
-                            errorAuth = true;
-                            errorValid = false;
-                            errorMatch = false;
-                            errorLack = false;
-                            alert('Username is already taken. Please choose another.');
-                            return;
-                        }
-                        console.log("before try");
-                        try{
-                            console.log("trying await");
+                        if (usernameQuerySnapshot.empty){
+                            updateProfile(user, { displayName: displayName });
                             await setDoc(doc(db, 'user', user.uid), {
                                 username: displayName,
                                 address: lineone,
@@ -131,9 +111,51 @@
                                 country: country,
                             }, { merge: true });
                             consolelog("successfully updated document");
-                        } catch (error) {
-                            console.error(error);
+                            console.log("update username:" + {displayName} + "to the user: " + user.uid);
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            console.log("before username");
+                        } else {
+                            errorAuth = true;
+                            errorValid = false;
+                            errorMatch = false;
+                            errorLack = false;
+                            alert('Username is already taken. Please choose another.');
+                            return;
                         }
+                        // updateProfile(user, { displayName: displayName });
+                        // await setDoc(doc(db, 'user', user.uid), {
+                        //         username: displayName,
+                        //         address: lineone,
+                        //         postcode: postcode,
+                        //         country: country,
+                        //     }, { merge: true });
+                        //     consolelog("successfully updated document");
+                        // console.log("update username:" + {displayName} + "to the user: " + user.uid);
+                        // await new Promise(resolve => setTimeout(resolve, 1000));
+                        // console.log("before username");
+                        // Check if the username is already taken
+                        // const usernameQuerySnapshot = await getDocs(query(collection(db, 'user'), where('displayName', '==', displayName)));
+                        // if (!usernameQuerySnapshot.empty) {
+                        //     errorAuth = true;
+                        //     errorValid = false;
+                        //     errorMatch = false;
+                        //     errorLack = false;
+                        //     alert('Username is already taken. Please choose another.');
+                        //     return;
+                        // }
+                        // console.log("before try");
+                        // try{
+                        //     console.log("trying await");
+                        //     await setDoc(doc(db, 'user', user.uid), {
+                        //         username: displayName,
+                        //         address: lineone,
+                        //         postcode: postcode,
+                        //         country: country,
+                        //     }, { merge: true });
+                        //     consolelog("successfully updated document");
+                        // } catch (error) {
+                        //     console.error(error);
+                        // }
                     } else {
                         console.error("User not found after signup");
                     }
