@@ -4,6 +4,8 @@
     import { getDoc, doc, setDoc } from "firebase/firestore";
     import "../app.css";
     import { authStore } from "../store/store";
+    import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+
 
     const nonAuthRoutes = ["/"];
 
@@ -11,6 +13,7 @@
 
     onMount(() => {
         console.log("Mounting");
+        injectSpeedInsights();
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
             const currentPath = window.location.pathname;
             
