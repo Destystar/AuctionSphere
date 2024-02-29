@@ -22,12 +22,6 @@
   let currencySymbol = "£";
   const user = auth.currentUser;
 
-  async function getImageUrl(imagePath) {
-    const imageRef = ref(storage, imagePath);
-    const imageUrl = await getDownloadURL(imageRef);
-    return imageUrl;
-  }
-
   function mergeSort(arr) {
     if (arr.length <= 1) {
       return arr;

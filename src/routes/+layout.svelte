@@ -13,7 +13,7 @@
 
     onMount(() => {
         console.log("Mounting");
-        injectSpeedInsights();
+        
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
             const currentPath = window.location.pathname;
             
