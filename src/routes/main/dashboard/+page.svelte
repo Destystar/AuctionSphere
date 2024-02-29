@@ -24,5 +24,16 @@
     <div class="bg-gradient-to-br from-midnight-blue to-midnight-purple h-screen">
         <Dashboard/>
         <h1 class="flex justify-center text-ghost font-bold text-3xl">Welcome {user?.displayName}</h1>
+        <div>
+            <h1 class="flex justify-center text-ghost font-bold text-3xl">
+                Your current balance is:
+            </h1>
+            <ul class="list-none">
+                <li>£{user.GBP}</li>
+                <li>€{user.EUR}</li>
+                <li>${user.USD}</li>
+                <li>¥{user.JPY}</li>
+            </ul>
+        </div>
     </div>
 {/if}
