@@ -1,5 +1,5 @@
 // @ts-nocheck
-import sgMail from "@sendgrid/mail";
+// import sgMail from "@sendgrid/mail";
 import { deleteApp, getApp, getApps, initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { getStorage, ref, deleteObject } from "firebase/storage";
@@ -8,26 +8,26 @@ import { getStorage, ref, deleteObject } from "firebase/storage";
  sgMail.setApiKey(import.meta.env.SENDGRID_API_KEY);
 
 // Function to send an email
-async function sendEmail(reciever, sub, mainEmail) {
-    const response = await fetch('/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to: reciever,
-        from: 'auctionsphereautomated@gmail.com',
-        subject: sub,
-        text: mainEmail,
-      }),
-    });
+// async function sendEmail(reciever, sub, mainEmail) {
+//     const response = await fetch('/send-email', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         to: reciever,
+//         from: 'auctionsphereautomated@gmail.com',
+//         subject: sub,
+//         text: mainEmail,
+//       }),
+//     });
 
-    if (response.ok) {
-      console.log('Email sent successfully');
-    } else {
-      console.error('Failed to send email');
-    }
- }
+//     if (response.ok) {
+//       console.log('Email sent successfully');
+//     } else {
+//       console.error('Failed to send email');
+//     }
+//  }
 
 async function getUserEmail(userID, seller) {
     if (seller) {
@@ -112,12 +112,12 @@ function handleExpiredListings(){
         // If item was sold
         if (buyerEmail != false) {
             // Sends the seller an email
-            sendEmail(sellerEmail, 'Your Item Has Been Sold', `please send ${listing.title} to \n ${getBuyerLocation(listing.highestBidderID)}\n \nDo not reply to this email as it is an automated email`);
+            // sendEmail(sellerEmail, 'Your Item Has Been Sold', `please send ${listing.title} to \n ${getBuyerLocation(listing.highestBidderID)}\n \nDo not reply to this email as it is an automated email`);
             // Sends the buyer an email
-            sendEmail(buyerEmail, 'Congratulations on your purchase', `you have bought ${listing.title} for ${listing.price}\n \nDo not reply to this email as it is an automated email`);
+            // sendEmail(buyerEmail, 'Congratulations on your purchase', `you have bought ${listing.title} for ${listing.price}\n \nDo not reply to this email as it is an automated email`);
         } else {
             // Expired listing
-            sendEmail(sellerEmail, 'Your Listing has Expired', `Your listing: ${listing.title} has expired\n \nDo not reply to this email as it is an automated email`);
+            // sendEmail(sellerEmail, 'Your Listing has Expired', `Your listing: ${listing.title} has expired\n \nDo not reply to this email as it is an automated email`);
         }
         // Deletes the image from storage
         deleteImage(listing.imageURL);
