@@ -5,7 +5,7 @@ import { getFirestore, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { getStorage, ref, deleteObject } from "firebase/storage";
  
  // Email set up
- sgMail.setApiKey(import.meta.env.SENDGRID_API_KEY);
+ // sgMail.setApiKey(import.meta.env.SENDGRID_API_KEY);
 
 // Function to send an email
 // async function sendEmail(reciever, sub, mainEmail) {
