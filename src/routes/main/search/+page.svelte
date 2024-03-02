@@ -21,6 +21,7 @@
   const stopwords = eng;
   let currencySymbol = "£";
   const user = auth.currentUser;
+  let expired = [];
 
   function mergeSort(arr) {
     if (arr.length <= 1) {
@@ -87,6 +88,17 @@
     }
   }
 
+  function checkExpired(time){
+    let endDate = new Date(time.seconds * 1000 + time.nanoseconds / 1000000);
+    let currentTime = new Date();
+    let diff = endDate.getTime() - currentTime.getTime();
+    if (diff <= 0){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 
   async function fetchSearchResults() {
     console.log("attempting search");
@@ -116,15 +128,16 @@
         allResults = allResults.filter(result => result.category === category);
       }
       // Removes expired items
-      allResults = allResults.filter(result => {
-        const endDate = result.end.toDate();
-        const currentDate = new Date();
-        return endDate > currentDate;
-      })
+      for (result in allResults){
+        if(checkExpired(result)){
+          expired.push(result);
+        }
+      }
+      allResults.filter(result => !expired.contains(result));
       // Filter by currency
       allResults = allResults.filter(result => result.currency === displayCurrency);
       // Remove duplicates
-      searchResults = Array.from(new Set(allResults.map(item => JSON.stringify(item)))).map(item => JSON.parse(item));
+      searchResults = Array.from(new Set(allResults.map(result => JSON.stringify(result)))).map(result => JSON.parse(result));
       console.log(searchResults.length);
       // Removes results posted by seller
       allResults = allResults.filter(result => result.sellerID !== user.uid);
