@@ -2,9 +2,8 @@
 // @ts-nocheck
 
   import { onMount } from 'svelte';
-  import { collection, query, where, limit, getDoc, setDoc, doc, updateDoc, getDocs, runTransaction } from "firebase/firestore";
-  import { db, storage, auth } from "$lib/firebase/firebase";
-  import { getDownloadURL, ref } from "firebase/storage";
+  import { collection, query, where, limit, getDoc, setDoc, doc, updateDoc, getDocs, runTransaction } from 'firebase/firestore';
+  import { db, storage, auth } from '$lib/firebase/firebase';
   import { eng } from 'stopword';
   import { writable } from 'svelte/store';
 
@@ -14,12 +13,12 @@
   const itemsPerPage = 10;
   let currentPage = 1;
   let bidValue;
-  let category = "Any";
-  let displayCurrency = "GBP";
+  let category = 'Any';
+  let displayCurrency = 'GBP';
   let timers = writable({});
   let bids = writable({});
   const stopwords = eng;
-  let currencySymbol = "£";
+  let currencySymbol = '£';
   const user = auth.currentUser;
   let expired = [];
 
@@ -50,7 +49,7 @@
   }
 
   function removeStopwordsFromString(str, stopwords) {
-    let words = str.split(" ");
+    let words = str.split(' ');
     words = words.filter((word) => !stopwords.includes(word));
     return words;
   }
@@ -101,7 +100,7 @@
 
 
   async function fetchSearchResults() {
-    console.log("attempting search");
+    console.log('attempting search');
     searching = true;
     console.log(searching);
     try {
@@ -133,7 +132,7 @@
           expired.push(result);
         }
       }
-      allResults.filter(result => !expired.contains(result));
+      allResults = allResults.filter(result => !expired.contains(result));
       // Filter by currency
       allResults = allResults.filter(result => result.currency === displayCurrency);
       // Remove duplicates
@@ -143,7 +142,7 @@
       allResults = allResults.filter(result => result.sellerID !== user.uid);
 
       for (let i = 0; i < searchResults.length; i++) {
-        $timers[[searchResults[i].id]] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
+        $timers[searchResults[i].id] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
         if (!searchResults[i].hasOwnProperty('title')) {
           throw new Error('All objects must have a title property');
         }
@@ -165,47 +164,43 @@
 
   function handleCurrencyChange(event) {
     displayCurrency = event.target.value;
-    if(displayCurrency === "GBP"){
-      currencySymbol = "£";
-    } else if (displayCurrency === "EUR") {
-      currencySymbol = "€"
-    } else if (displayCurrency === "USD") {
-      currencySymbol = "$";
-    } else if (displayCurrency === "JPY") {
-      currencySymbol = "¥";
+    if(displayCurrency === 'GBP'){
+      currencySymbol = '£';
+    } else if (displayCurrency === 'EUR') {
+      currencySymbol = '€';
+    } else if (displayCurrency === 'USD') {
+      currencySymbol = '$';
+    } else if (displayCurrency === 'JPY') {
+      currencySymbol = '¥';
     }
     fetchSearchResults();
   }
 
   async function handleBid(price, result){
-    console.log("Running handleBid: " + price + result.listingID);
     let userAmount = 0;
     const usersRef = collection(db, 'user');
     let userQuery = query(usersRef, where('email', '==', user.email));
 
     const userSnap = await getDocs(userQuery);
-    console.log("User snapshot: ", userSnap);
     if (!userSnap.empty) {
         const userDoc = userSnap.docs[0];
-        console.log("User document: ", userDoc);
         switch(displayCurrency) {
-            case "GBP":
+            case 'GBP':
                 userAmount = userDoc.data().GBP;
                 break;
-            case "EUR":
+            case 'EUR':
                 userAmount = userDoc.data().EUR;
                 break;
-            case "USD":
+            case 'USD':
                 userAmount = userDoc.data().USD;
                 break;
-            case "JPY":
+            case 'JPY':
                 userAmount = userDoc.data().JPY;
                 break;
             default:
                 console.log('Invalid currency type');
         }
     }
-    console.log("User amount: ", userAmount);
     if (userAmount >= price) {
         await runTransaction(db, async (transaction) => {
             const bidRef = doc(db, 'bids', `${user.uid}_${result.listingID}`);
@@ -214,7 +209,6 @@
             const listingSnapshot = await transaction.get(listingRef);
             const listingData = listingSnapshot.data();
 
-            console.log("Listing data: ", listingData);
             if (price > listingData.price) {
                 // Update the listing with the new price and highest bidder id
                 transaction.update(listingRef, {
@@ -228,7 +222,7 @@
                   amount: price,
                 }, { merge: true });
             } else {
-                console.log("Your bid is not high enough!");
+                console.log('Your bid is not high enough');
             }
         });
     }
