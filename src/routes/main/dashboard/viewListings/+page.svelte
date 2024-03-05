@@ -2,7 +2,7 @@
     // @ts-nocheck
     
     import { onMount } from 'svelte';
-    import { collection, query, where, limit, getDoc, setDoc, doc, updateDoc, getDocs, runTransaction, getCountFromServer } from "firebase/firestore";
+    import { collection, query, where, getDoc, setDoc, doc, updateDoc, getDocs, runTransaction, getCountFromServer } from "firebase/firestore";
     import { db, storage, auth } from "$lib/firebase/firebase";
     import { getDownloadURL, ref } from "firebase/storage";
     import { eng } from 'stopword';
@@ -10,7 +10,6 @@
 
     let searchQuery = '';
     let searchResults = [];
-    const itemsPerPage = 10;
     let currentPage = 1;
     let timers = writable({});
     let numBids = writable({});
@@ -99,7 +98,6 @@
             let qSearchTerm = query(
                 listingsCol,
                 where('sellerID', '==', user.uid),
-                limit(itemsPerPage)
             );
             const querySnapshot = await getDocs(qSearchTerm);
             const docsWithImages = querySnapshot.docs.map(doc => {

@@ -10,7 +10,7 @@
   let searchQuery = '';
   let searchResults = [];
   let searching = false;
-  const itemsPerPage = 10;
+  const maxResults = 100;
   let currentPage = 1;
   let bidValue;
   let category = 'Any';
@@ -114,7 +114,7 @@
       let qSearchTerm = query(
         listingsCol,
         where('searchTerms', 'array-contains-any', searchQueryArray),
-        limit(itemsPerPage)
+        limit(maxResults)
       );
       const querySnapshot = await getDocs(qSearchTerm);
       const docsWithImages = querySnapshot.docs.map(doc => {
