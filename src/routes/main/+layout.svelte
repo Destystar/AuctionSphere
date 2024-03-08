@@ -5,8 +5,6 @@
     import { onMount, onDestroy } from 'svelte';
     import { auth } from "$lib/firebase/firebase";
 
-    let logoutHover = false;
-    let isDashboardDropdownVisible = false;
     let isProfileDropdownVisible = false;
     let user = auth.currentUser;
 
@@ -26,26 +24,6 @@
             document.removeEventListener('click', handleClickOutside);
         };
     });
-
-    function toggleDashboardDropdown() {
-        isDashboardDropdownVisible = !isDashboardDropdownVisible;
-    }
-
-    /**
-     * @param {{ stopPropagation: () => void; }} event
-     */
-    function showDashboardDropdown(event) {
-        isDashboardDropdownVisible = true;
-        event.stopPropagation(); // Prevent parent elements from handling the event
-    }
-
-    /**
-     * @param {{ stopPropagation: () => void; }} event
-     */
-    function hideDashboardDropdown(event) {
-        isDashboardDropdownVisible = false;
-        event.stopPropagation(); // Prevent parent elements from handling the event
-    }
 
     function toggleProfileDropdown() {
         isProfileDropdownVisible = !isProfileDropdownVisible;

@@ -11,7 +11,6 @@
   let searchResults = [];
   let searching = false;
   const maxResults = 100;
-  let currentPage = 1;
   let bidValue;
   let category = 'Any';
   let displayCurrency = 'GBP';
@@ -230,10 +229,6 @@
     fetchSearchResults();
   }
 
-  function handlePageChange(page) {
-    currentPage = page;
-    fetchSearchResults();
-  }
 
   function handleKeyDown(event) {
       if (event.key === 'Enter' && searchQuery !== '') {
