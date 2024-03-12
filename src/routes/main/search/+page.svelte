@@ -136,6 +136,7 @@
       // Remove duplicates
       searchResults = Array.from(new Set(allResults.map(result => JSON.stringify(result)))).map(result => JSON.parse(result));
       console.log(searchResults.length);
+      searching = false;
       // Removes results posted by seller
       allResults = allResults.filter(result => result.sellerID !== user.uid);
       searching = false;
