@@ -7,6 +7,7 @@
     import { getDownloadURL, ref } from "firebase/storage";
     import { eng } from 'stopword';
     import { writable } from 'svelte/store';
+    import { handleExpiredListings } from '$lib/firebase/expired';
 
     let searchQuery = '';
     let searchResults = [];

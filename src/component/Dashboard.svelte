@@ -1,5 +1,10 @@
 <script>
+  import { handleExpiredListings } from "$lib/firebase/expired";
+  import { onMount } from "svelte";
 
+  onMount(async () => {
+    await handleExpiredListings();
+  });
 </script>
 
 <div class="fixed top-[48px] left-0 h-screen w-34 m-0 flex flex-col bg-gradient-to-br from-emerald-500 to-midnight-blue text-white">
