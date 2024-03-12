@@ -130,7 +130,7 @@
           expired.push(result);
         }
       }
-      allResults = allResults.filter(result => !expired.contains(result));
+      allResults = allResults.filter(result => !expired.includes(result));
       // Filter by currency
       allResults = allResults.filter(result => result.currency === displayCurrency);
       // Remove duplicates
