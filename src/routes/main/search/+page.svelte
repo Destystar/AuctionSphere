@@ -138,7 +138,7 @@
       console.log(searchResults.length);
       // Removes results posted by seller
       allResults = allResults.filter(result => result.sellerID !== user.uid);
-
+      searching = false;
       for (let i = 0; i < searchResults.length; i++) {
         $timers[searchResults[i].id] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
       }
