@@ -125,7 +125,7 @@
         allResults = allResults.filter(result => result.category === category);
       }
       // Removes expired items
-      for (result in allResults){
+      for (let result of allResults){
         if(checkExpired(result)){
           expired.push(result);
         }
