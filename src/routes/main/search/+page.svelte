@@ -126,12 +126,12 @@
       // Remove duplicates
       searchResults = Array.from(new Set(allResults.map(result => JSON.stringify(result)))).map(result => JSON.parse(result));
       console.log(searchResults.length);
-      searching = false;
       // Removes results posted by seller
       allResults = allResults.filter(result => result.sellerID !== user.uid);
-      searching = false;
+      // Adds the timers to each result
       for (let i = 0; i < searchResults.length; i++) {
         $timers[searchResults[i].id] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
+        console.log(searchResults[i].id);
       }
       // Removes expired items and items with errors
       for (let result of allResults){
