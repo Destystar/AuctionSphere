@@ -133,13 +133,13 @@
       for (let i = 0; i < searchResults.length; i++) {
         $timers[searchResults[i].id] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
       }
-      // Removes expired items
-      for (let result of allResults){
-        if(checkExpired(result.id)){
-          expired.push(result);
-        }
-      }
-      allResults = allResults.filter(result => !expired.includes(result));
+      // Removes expired items and items with errors in time
+      // for (let result of allResults){
+      //   if(checkExpired(result.id)){
+      //     expired.push(result);
+      //   }
+      // }
+      // allResults = allResults.filter(result => !expired.includes(result));
       
       searchResults = mergeSort(searchResults);
       searching = false;
