@@ -85,8 +85,11 @@
     }
   }
 
-  function checkExpired(id){
-    if ($timers[id] === 'Listing Ended'){
+  function checkExpired(time){
+    let endDate = new Date(time.seconds * 1000 + time.nanoseconds / 1000000);
+    let currentTime = new Date();
+    let diff = endDate.getTime() - currentTime.getTime();
+    if (diff <= 0){
       return true;
     } else {
       return false;
@@ -121,6 +124,13 @@
       if (category !== 'Any') {
         allResults = allResults.filter(result => result.category === category);
       }
+      // Removes expired items
+      for (let result of allResults){
+        if(checkExpired(result)){
+          expired.push(result);
+        }
+      }
+      allResults = allResults.filter(result => !expired.includes(result));
       // Filter by currency
       allResults = allResults.filter(result => result.currency === displayCurrency);
       // Remove duplicates
@@ -133,13 +143,6 @@
       for (let i = 0; i < searchResults.length; i++) {
         $timers[searchResults[i].id] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
       }
-      // Removes expired items and items with errors in time
-      // for (let result of allResults){
-      //   if(checkExpired(result.id)){
-      //     expired.push(result);
-      //   }
-      // }
-      // allResults = allResults.filter(result => !expired.includes(result));
       
       searchResults = mergeSort(searchResults);
       searching = false;
