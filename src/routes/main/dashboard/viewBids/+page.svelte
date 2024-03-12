@@ -4,20 +4,12 @@
     import { onMount } from 'svelte';
     import { collection, query, where, getDoc, setDoc, doc, updateDoc, getDocs, runTransaction } from "firebase/firestore";
     import { db, storage, auth } from "$lib/firebase/firebase";
-    import { getDownloadURL, ref } from "firebase/storage";
-    import { eng } from 'stopword';
     import { writable } from 'svelte/store';
 
     let searchQuery = '';
     let searchResults = [];
-    let currentPage = 1;
-    let bidValue;
-    let category = "Any";
-    let displayCurrency = "GBP";
     let timers = writable({});
     let bids = writable({});
-    const stopwords = eng;
-    let currencySymbol = "£";
     const user = auth.currentUser;
 
     onMount(fetchSearchResults);
@@ -127,8 +119,8 @@
     async function handleBid(price, result, currency){
         console.log("Running handleBid: " + price + result.listingID);
         let userAmount = 0;
-        const usersRef = collection(db, 'user');
-        let userQuery = query(usersRef, where('email', '==', user.email));
+        const usersCol = collection(db, 'user');
+        let userQuery = query(usersCol, where('email', '==', user.email));
 
         const userSnap = await getDocs(userQuery);
         console.log("User snapshot: ", userSnap);
@@ -183,23 +175,18 @@
 
 
     function getCurrencySymbol(currency) {
-    switch(currency) {
-        case "GBP":
-            return "£";
-        case "EUR":
-            return "€";
-        case "USD":
-            return "$";
-        case "JPY":
-            return "¥";
-        default:
-            return "£";
-    }
-    }
-
-    function handlePageChange(page) {
-    currentPage = page;
-    fetchSearchResults();
+        switch(currency) {
+            case "GBP":
+                return "£";
+            case "EUR":
+                return "€";
+            case "USD":
+                return "$";
+            case "JPY":
+                return "¥";
+            default:
+                return "£";
+        }
     }
 
     function handleKeyDown(event) {

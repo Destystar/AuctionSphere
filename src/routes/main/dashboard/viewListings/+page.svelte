@@ -10,7 +10,6 @@
 
     let searchQuery = '';
     let searchResults = [];
-    let currentPage = 1;
     let timers = writable({});
     let numBids = writable({});
     const user = auth.currentUser;
@@ -138,11 +137,6 @@
         default:
             return "£";
     }
-    }
-
-    function handlePageChange(page) {
-    currentPage = page;
-    fetchSearchResults();
     }
 
     function handleKeyDown(event) {

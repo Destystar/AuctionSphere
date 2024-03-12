@@ -11,7 +11,6 @@
   let searchResults = [];
   let searching = false;
   const maxResults = 100;
-  let bidValue;
   let category = 'Any';
   let displayCurrency = 'GBP';
   let timers = writable({});
@@ -174,8 +173,8 @@
 
   async function handleBid(price, result){
     let userAmount = 0;
-    const usersRef = collection(db, 'user');
-    let userQuery = query(usersRef, where('email', '==', user.email));
+    const usersCol = collection(db, 'user');
+    let userQuery = query(usersCol, where('email', '==', user.email));
 
     const userSnap = await getDocs(userQuery);
     if (!userSnap.empty) {
