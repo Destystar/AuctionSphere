@@ -135,7 +135,7 @@
       }
       // Removes expired items and items with errors
       for (let result of allResults){
-        if(checkExpired(result.id)){
+        if(checkExpired(result.listingID)){
           expired.push(result);
         }
       }
