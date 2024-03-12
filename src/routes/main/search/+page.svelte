@@ -131,7 +131,7 @@
       // Adds the timers to each result
       for (let i = 0; i < searchResults.length; i++) {
         $timers[searchResults[i].id] = calculateTimeLeft(searchResults[i].end, searchResults[i].listingID);
-        console.log(searchResults[i].id);
+        console.log("id: "+searchResults[i].id);
       }
       // Removes expired items and items with errors
       for (let result of allResults){
