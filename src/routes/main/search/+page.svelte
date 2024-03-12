@@ -134,12 +134,12 @@
         console.log("id: "+searchResults[i].id);
       }
       // Removes expired items and items with errors
-      for (let result of allResults){
+      for (let result of searchResults){
         if(checkExpired(result.listingID)){
           expired.push(result);
         }
       }
-      allResults = allResults.filter(result => !expired.includes(result));
+      searchResults = searchResults.filter(result => !expired.includes(result));
       
       searchResults = mergeSort(searchResults);
       searching = false;
