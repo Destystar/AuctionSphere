@@ -151,7 +151,7 @@
       }
 
       // Function to make TTL field timestamp
-      function calculateTTL() {
+      function calculateTTL(endDateTime) {
         // Adds a week from the listing end date
         const TTLStamp = (endDateTime.getTime() + 7);
         return TTLStamp;
@@ -182,7 +182,7 @@
                 description,
                 searchTerms: preprocess(searchTerms),
                 highestBidderID,
-                TTLEnd: calculateTTL(),
+                TTLEnd: calculateTTL(calculateEnd()),
             };
             const listingDocRef = doc(listingsCol, listingID);
             await setDoc(listingDocRef, listingData);
