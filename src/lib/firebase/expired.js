@@ -56,7 +56,7 @@ async function deleteBids(listingID) {
 // Retrieves the buyers address
 async function getBuyerLocation(userID) {
     const userRef = doc(db, 'user', userID);
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
         const userData = docSnap.data();
         let address = `${userData.address}\n${userData.poscode}\n${userData.country}`
@@ -88,11 +88,19 @@ async function fetchExpiredListings() {
     }
 }
 
+function handleExpiredListing(listing){
+    let sellerEmail = getUserEmail(listing.sellerID, true);
+    let buyerEmail = getUserEmail(listing.highestBidderID, false);
+    deleteImage(listing.imageURL);
+    deleteBids(listing.listingID);
+    deleteDoc(listing);
+}
+
 function handleExpiredListings(){
     let endedListings = fetchExpiredListings();
     for (listing in endedListings) {
-        let sellerEmail = getUserEmail(listing.sellerID, true)
-        let buyerEmail = getUserEmail(listing.highestBidderID, false)
+        let sellerEmail = getUserEmail(listing.sellerID, true);
+        let buyerEmail = getUserEmail(listing.highestBidderID, false);
         // If item was sold
         if (buyerEmail != false) {
             // Sends the seller an email
@@ -131,5 +139,7 @@ function handleExpiredListings(){
 }
 
 export {
-    handleExpiredListings
+    handleExpiredListings,
+    handleExpiredListing,
+    getBuyerLocation
 }

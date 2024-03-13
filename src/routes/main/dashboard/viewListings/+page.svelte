@@ -7,7 +7,7 @@
     import { getDownloadURL, ref } from "firebase/storage";
     import { eng } from 'stopword';
     import { writable } from 'svelte/store';
-    import { handleExpiredListings } from '$lib/firebase/expired';
+    import { handleExpiredListings, getBuyerLocation } from '$lib/firebase/expired';
 
     let searchQuery = '';
     let searchResults = [];
@@ -152,38 +152,51 @@
       <!-- Scrollable container for search results -->
       <div class="overflow-auto m-4 space-y-4">
         {#if searchResults.length > 0}
-        {#each searchResults as result (result.listingID)}
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <div class="flex justify-center">
-            <div class="flex justify-center">
-              <div class="flex-shrink-0">
-                <!-- svelte-ignore a11y-img-redundant-alt -->
-                <img class="h-40 w-40" src="{result.imageUrl}" alt="Listing image" />
-              </div>
-              <div class="ml-4">
-                <div class="text-lg leading-6 font-medium text-gray-900">{result.title}</div>
-                <p class="mt-2 text-sm text-gray-500">{result.description}</p>
-              </div>
-            </div>
-            <div class="flex flex-col">
-              <div class="ml-4">
-                <dt class="text-m font-medium text-gray-500">Time Left:</dt>
-                <dd class="mt-1 text-m text-blue-700 font-bold">{$timers[result.listingID]}</dd>
-              </div>
-              <div class="ml-4">
-                <dt class="text-m font-medium text-gray-500">Current Price:</dt>
-                <dd class="mt-1 text-m font-bold text-blue-700">{getCurrencySymbol(result.currency)}{parseFloat(result.price).toFixed(2)}</dd>
-              </div>
-              <div class="ml-4">
-                <dt class="text-m font-medium text-gray-500">There are Currently:</dt>
-                <dd class="mt-1 text-m font-bold text-blue-700">{numBids[result.listingID]} bids</dd>
-              </div>
-            </div>
-          </div>   
-        </div>
-        {/each}
+            {#each searchResults as result (result.listingID)}
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                    <div class="flex justify-center">
+                        <div class="flex justify-center">
+                            <div class="flex-shrink-0">
+                                <!-- svelte-ignore a11y-img-redundant-alt -->
+                                <img class="h-40 w-40" src="{result.imageUrl}" alt="Listing image" />
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-lg leading-6 font-medium text-gray-900">{result.title}</div>
+                                <p class="mt-2 text-sm text-gray-500">{result.description}</p>
+                            </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <div class="ml-4">
+                                    <dt class="text-m font-medium text-gray-500">Time Left:</dt>
+                                    <dd class="mt-1 text-m text-blue-700 font-bold">{$timers[result.listingID]}</dd>
+                                </div>
+                                <div class="ml-4">
+                                    <dt class="text-m font-medium text-gray-500">Current Price:</dt>
+                                    <dd class="mt-1 text-m font-bold text-blue-700">{getCurrencySymbol(result.currency)}{parseFloat(result.price).toFixed(2)}</dd>
+                                </div>
+                                <div class="ml-4">
+                                    <dt class="text-m font-medium text-gray-500">There are Currently:</dt>
+                                    <dd class="mt-1 text-m font-bold text-blue-700">{numBids[result.listingID]} bids</dd>
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                Buyer Info:
+                                <div class="ml-4">
+                                    <dt class="text-m font-medium text-gray-500">Address Line One:</dt>
+                                    {#if numBids[result.listingID] > 0 && $timers[result.listingID] === 'Listing Ended'}
+                                        <dd class="mt-1 text-m font-bold text-neutral-950">{getBuyerLocation(result.highestBidderID)}</dd>
+                                    {:else if numBids[result.listingID] === 0}
+                                        <dd class="mt-1 text-m font-bold text-red-700">There are no bids on this listing</dd>
+                                    {:else}
+                                        <dd class="mt-1 text-m font-bold text-red-700">The listing has not finished yet</dd>
+                                    {/if}
+                                </div>
+                            </div>
+                    </div>   
+                </div>
+            {/each}
         {:else}
-        <p class="text-gray-500">You don't have any active listings.</p>
+            <p class="text-gray-500">You don't have any active listings.</p>
         {/if}
        </div>      
      </div>
