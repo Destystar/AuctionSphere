@@ -17,7 +17,7 @@ import { db } from "$lib/firebase/firebase";
 async function getUserEmail(userID) {
         const userRef = doc(db, 'user', userID);
         console.log(userID);
-        const docSnap = await getDoc(docRef);
+        const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
         const userData = docSnap.data();
         console.log(userData.email);
