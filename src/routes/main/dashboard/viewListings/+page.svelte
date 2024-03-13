@@ -8,6 +8,7 @@
     import { eng } from 'stopword';
     import { writable } from 'svelte/store';
     import { handleExpiredListings, getBuyerLocation, getUserEmail } from '$lib/firebase/expired';
+    import { error } from '@sveltejs/kit';
 
     let searchQuery = '';
     let searchResults = [];
@@ -190,6 +191,7 @@
                                             <dd class="mt-1 text-m font-bold text-neutral-950">{email}</dd>
                                         {:catch error}
                                             <dd class="mt-1 text-m font-bold text-red-700">Error loading buyer email</dd>
+                                            console.log(error);
                                         {/await}
                                     {:else if numBids[result.listingID] === 0}
                                         <dd class="mt-1 text-m font-bold text-red-700">There are no bids on this listing</dd>
