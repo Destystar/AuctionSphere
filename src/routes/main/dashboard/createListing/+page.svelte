@@ -153,7 +153,7 @@
       // Function to make TTL field timestamp
       function calculateTTL(endDateTime) {
         // Adds a week from the listing end date
-        const TTLStamp = (endDateTime.getTime() + 7);
+        const TTLStamp = new Date((endDateTime.getTime() + 7));
         return TTLStamp;
       }
   
