@@ -182,8 +182,8 @@
                             <div class="flex flex-col">
                                 Buyer Info:
                                 <div class="ml-4">
-                                    <dt class="text-m font-medium text-gray-500">Address:</dt>
                                     {#if numBids[result.listingID] > 0 && $timers[result.listingID] === 'Listing Ended'}
+                                        <dt class="text-m font-medium text-gray-500">Address:</dt>
                                         {#await getBuyerLocation(result.highestBidderID)}
                                             <p>Loading buyer location...</p>
                                         {:then location}

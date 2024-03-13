@@ -1,22 +1,71 @@
 <script>
+// @ts-nocheck
+
     import { authHandlers } from "../../store/store";
     import "../../app.css";
     import mainIcon from "../../resources/icons/appicon.png";
     import { onMount, onDestroy } from 'svelte';
-    import { auth } from "$lib/firebase/firebase";
+    import { auth, db } from "$lib/firebase/firebase";
 
     let isProfileDropdownVisible = false;
     let user = auth.currentUser;
+    let GBP = 0;
+    let EUR = 0;
+    let USD = 0;
+    let JPY = 0;
+
+    async function getUserGBP(userID) {
+        const userRef = doc(db, 'user', userID);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            let GBP = userData.GBP;
+            return GBP;
+        }
+    }
+
+    async function getUserEUR(userID) {
+        const userRef = doc(db, 'user', userID);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            let EUR = userData.EUR;
+            return EUR;
+        }
+    }
+
+    async function getUserUSD(userID) {
+        const userRef = doc(db, 'user', userID);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            let USD = userData.USD;
+            return USD;
+        }
+    }
+
+    async function getUserJPY(userID) {
+        const userRef = doc(db, 'user', userID);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            let JPY = userData.JPY;
+            return JPY;
+        }
+    }
 
     onMount(() => {
-        // @ts-ignore
         function handleClickOutside(event) {
             const dropdownElement = document.getElementById('profileDropdown');
-            // @ts-ignore
             if (dropdownElement !== event.target && !dropdownElement.contains(event.target)) {
                 isProfileDropdownVisible = false;
             }
         }
+
+        GBP = getUserGBP();
+        EUR = getUserEUR();
+        USD = getUserUSD();
+        JPY = getUserJPY();
 
         document.addEventListener('click', handleClickOutside);
 
@@ -68,9 +117,11 @@
                     <!-- Profile dropdown -->
                     {#if isProfileDropdownVisible}
                         <div id="profileDropdown" class="absolute top-full right-0 mt-2 bg-white shadow-lg rounded overflow-hidden z-10">
-                            <!-- svelte-ignore a11y-missing-attribute -->
-                            <!-- svelte-ignore a11y-click-events-have-key-events -->
                             <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap" on:click={authHandlers.logout}>Log out</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">£{GBP}</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">€{EUR}</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">${USD}</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">¥{JPY}</a>
                         </div>
                     {/if}
                 </div> 
