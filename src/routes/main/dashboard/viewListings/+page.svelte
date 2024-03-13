@@ -7,8 +7,7 @@
     import { getDownloadURL, ref } from "firebase/storage";
     import { eng } from 'stopword';
     import { writable } from 'svelte/store';
-    import { handleExpiredListings, getBuyerLocation, getUserEmail } from '$lib/firebase/expired';
-    import { error } from '@sveltejs/kit';
+    import { getBuyerusername, getBuyerLocation, getUserEmail } from '$lib/firebase/expired';
 
     let searchQuery = '';
     let searchResults = [];
@@ -181,15 +180,31 @@
                                 </div>
                             </div>
                             <div class="flex flex-col">
-                                Buyer Email Contact Them For Details:
+                                Buyer Info:
                                 <div class="ml-4">
-                                    <dt class="text-m font-medium text-gray-500">Email:</dt>
+                                    <dt class="text-m font-medium text-gray-500">Address:</dt>
                                     {#if numBids[result.listingID] > 0 && $timers[result.listingID] === 'Listing Ended'}
-                                        {#await getUserEmail(result.highestBidderID)}
-                                            <p>Loading buyer Email...</p>
-                                        {:then email}
-                                            <dd class="mt-1 text-m font-bold text-neutral-950">{email}</dd>
+                                        {#await getBuyerLocation(result.highestBidderID)}
+                                            <p>Loading buyer location...</p>
+                                        {:then location}
+                                            <dd class="mt-1 text-m font-bold text-neutral-950">{location}</dd>
                                         {:catch error}
+                                            <dd class="mt-1 text-m font-bold text-red-700">Error loading buyer location</dd>
+                                        {/await}
+                                        <dt class="text-m font-medium text-gray-500">Username:</dt>
+                                        {#await getBuyerusername(result.highestBidderID)}
+                                            <p>Loading buyer username...</p>
+                                        {:then username} 
+                                            <dd class="mt-1 text-m font-bold text-neutral-950">{username}</dd>
+                                        {:catch}
+                                            <dd class="mt-1 text-m font-bold text-red-700">Error loading buyer username</dd>
+                                        {/await}
+                                        <dt class="text-m font-medium text-gray-500">Email:</dt>
+                                        {#await getUserEmail(result.highestBidderID)}
+                                            <p>Loading buyer email...</p>
+                                        {:then email} 
+                                            <dd class="mt-1 text-m font-bold text-neutral-950">{email}</dd>
+                                        {:catch}
                                             <dd class="mt-1 text-m font-bold text-red-700">Error loading buyer email</dd>
                                         {/await}
                                     {:else if numBids[result.listingID] === 0}

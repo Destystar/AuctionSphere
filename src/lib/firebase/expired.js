@@ -42,13 +42,24 @@ async function deleteBids(listingID) {
     });
 }
 
+// Retrieves the Buyers Username
+async function getBuyerusername(userID){
+    const userRef = doc(db, 'user', userID);
+    const docSnap = await getDoc(userRef);
+    if (docSnap.exists()) {
+        const userData = docSnap.data();
+        let username = userData.username;
+        return username;
+    }
+}
+
 // Retrieves the buyers address
 async function getBuyerLocation(userID) {
     const userRef = doc(db, 'user', userID);
     const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
         const userData = docSnap.data();
-        let address = `${userData.address}\n${userData.poscode}\n${userData.country}`
+        let address = `${userData.address}\n${userData.postcode}\n${userData.country}`
         return address;
     }
 }
@@ -131,5 +142,6 @@ export {
     handleExpiredListings,
     handleExpiredListing,
     getBuyerLocation,
-    getUserEmail
+    getUserEmail,
+    getBuyerusername
 }
