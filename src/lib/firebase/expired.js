@@ -3,6 +3,7 @@
 import { deleteApp, getApp, getApps, initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, deleteDoc, collection } from "firebase/firestore";
 import { getStorage, ref, deleteObject } from "firebase/storage";
+import { db } from "./firebase";
  
  // Email set up
 //  const transporter = nodemailer.createTransport({
