@@ -191,7 +191,6 @@
                                             <dd class="mt-1 text-m font-bold text-neutral-950">{email}</dd>
                                         {:catch error}
                                             <dd class="mt-1 text-m font-bold text-red-700">Error loading buyer email</dd>
-                                            console.log(error);
                                         {/await}
                                     {:else if numBids[result.listingID] === 0}
                                         <dd class="mt-1 text-m font-bold text-red-700">There are no bids on this listing</dd>
