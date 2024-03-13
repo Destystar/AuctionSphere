@@ -62,10 +62,10 @@
             }
         }
 
-        GBP = getUserGBP();
-        EUR = getUserEUR();
-        USD = getUserUSD();
-        JPY = getUserJPY();
+        GBP = getUserGBP(user.uid);
+        EUR = getUserEUR(user.uid);
+        USD = getUserUSD(user.uid);
+        JPY = getUserJPY(user.uid);
 
         document.addEventListener('click', handleClickOutside);
 
@@ -73,10 +73,6 @@
             document.removeEventListener('click', handleClickOutside);
         };
     });
-
-    function toggleProfileDropdown() {
-        isProfileDropdownVisible = !isProfileDropdownVisible;
-    }
 
     /**
      * @param {{ stopPropagation: () => void; }} event
@@ -86,13 +82,6 @@
         event.stopPropagation(); // Prevent parent elements from handling the event
     }
 
-    /**
-     * @param {{ stopPropagation: () => void; }} event
-     */
-    function hideProfileDropdown(event) {
-        isProfileDropdownVisible = false;
-        event.stopPropagation(); // Prevent parent elements from handling the event
-    }
 </script>
 
 <div class="bg-gradient-to-br from-midnight-blue to-midnight-purple h-screen">
