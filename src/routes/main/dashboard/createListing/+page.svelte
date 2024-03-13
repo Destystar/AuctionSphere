@@ -149,6 +149,13 @@
           const endDateTime = new Date(currentDateTime.getTime() + totalMilliseconds);
           return endDateTime;
       }
+
+      // Function to make TTL field timestamp
+      function calculateTTL() {
+        // Adds a week from the listing end date
+        const TTLStamp = (endDateTime.getTime() + 7);
+        return TTLStamp;
+      }
   
     
       // Function to handle form submission
@@ -175,6 +182,7 @@
                 description,
                 searchTerms: preprocess(searchTerms),
                 highestBidderID,
+                TTLEnd: calculateTTL(),
             };
             const listingDocRef = doc(listingsCol, listingID);
             await setDoc(listingDocRef, listingData);
