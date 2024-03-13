@@ -2,10 +2,8 @@
     // @ts-nocheck
     
     import { onMount } from 'svelte';
-    import { collection, query, where, getDoc, setDoc, doc, updateDoc, getDocs, runTransaction, getCountFromServer } from "firebase/firestore";
+    import { collection, query, where, getDoc, setDoc, doc, updateDoc, getDocs, getCountFromServer } from "firebase/firestore";
     import { db, storage, auth } from "$lib/firebase/firebase";
-    import { getDownloadURL, ref } from "firebase/storage";
-    import { eng } from 'stopword';
     import { writable } from 'svelte/store';
     import { getBuyerusername, getBuyerLocation, getUserEmail } from '$lib/firebase/expired';
 
@@ -124,27 +122,87 @@
         }
     }
 
-
-    function getCurrencySymbol(currency) {
-    switch(currency) {
-        case "GBP":
-            return "£";
-        case "EUR":
-            return "€";
-        case "USD":
-            return "$";
-        case "JPY":
-            return "¥";
-        default:
-            return "£";
-    }
-    }
-
-    function handleKeyDown(event) {
-        if (event.key === 'Enter' && searchQuery !== '') {
-            fetchSearchResults();
+    async function handleTransaction(currency, sellerID, buyerID, price){
+        const sellerRef = doc(db, 'user', sellerID);
+        const sellerDocSnap = await getDoc(sellerRef);
+        if (sellerDocSnap.exists()) {
+            const sellerData = sellerDocSnap.data();
+            switch (currency) {
+                case "GBP":
+                    let sellerGBP = sellerData.GBP + price;
+                    await updateDoc(sellerRef, {
+                        GBP: sellerGBP
+                    });
+                    break;
+                case "EUR":
+                    let sellerEUR = sellerData.EUR + price;
+                    await updateDoc(sellerRef, {
+                        EUR: sellerEUR
+                    });
+                    break;
+                case "USD":
+                    let sellerUSD = sellerData.USD + price;
+                    await updateDoc(sellerRef, {
+                        USD: sellerUSD
+                    });
+                    break;
+                case "JPY":
+                    let sellerJPY = sellerData.JPY + price;
+                    await updateDoc(sellerRef, {
+                        JPY: sellerJPY
+                    });
+                    break;
+            }
+        }
+        const buyerRef = doc(db, 'user', buyerID);
+        const buyerDocSnap = await getDoc(buyerRef);
+        if (buyerDocSnap.exists()) {
+            const buyerData = buyerDocSnap.data();
+            switch (currency) {
+                case "GBP":
+                    let buyerGBP = buyerData.GBP - price;
+                    await updateDoc(buyerRef, {
+                        GBP: buyerGBP
+                    });
+                    break;
+                case "EUR":
+                    let buyerEUR = buyerData.EUR - price;
+                    await updateDoc(buyerRef, {
+                        EUR: buyerEUR
+                    });
+                    break;
+                case "USD":
+                    let buyerUSD = buyerData.USD - price;
+                    await updateDoc(buyerRef, {
+                        USD: buyerUSD
+                    });
+                    break;
+                case "JPY":
+                    let buyerJPY = buyerData.JPY - price;
+                    await updateDoc(buyerRef, {
+                        JPY: buyerJPY
+                    });
+                    break;
+            }
         }
     }
+
+
+    function getCurrencySymbol(currency) {
+        switch(currency) {
+            case "GBP":
+                return "£";
+            case "EUR":
+                return "€";
+            case "USD":
+                return "$";
+            case "JPY":
+                return "¥";
+            default:
+                return "£";
+        }
+    }
+
     </script>
     
     
@@ -214,6 +272,11 @@
                                     {/if}
                                 </div>
                             </div>
+                        <div>
+                            {#if numBids[result.listingID] > 0 && $timers[result.listingID] === 'Listing Ended'}
+                                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" on:click={handleTransaction(result.currency, user.uid, result.highestBidderID, result.price)}>Complete Transaction</button>
+                            {/if}
+                        </div>
                     </div>   
                 </div>
             {/each}
