@@ -14,28 +14,14 @@ import { db } from "./firebase";
 //     }
 //  });
 
-async function getUserEmail(userID, seller) {
-    if (seller) {
+async function getUserEmail(userID) {
         const userRef = doc(db, 'user', userID);
         const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
         const userData = docSnap.data();
         return userData.email;
-    } else {
-        console.log('document does not exist!');
     }
-    } else {
-        const userRef = doc(db, 'user', userID);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            const userData = docSnap.data();
-            return userData.email;
-        } else {
-            console.log('document does not exist!');
-            return false;
-        }
-    }
-    }
+}
 
 // Delete image
 async function deleteImage(imageURL) {
@@ -100,8 +86,8 @@ function handleExpiredListing(listing){
 function handleExpiredListings(){
     let endedListings = fetchExpiredListings();
     for (listing in endedListings) {
-        let sellerEmail = getUserEmail(listing.sellerID, true);
-        let buyerEmail = getUserEmail(listing.highestBidderID, false);
+        let sellerEmail = getUserEmail(listing.sellerID);
+        let buyerEmail = getUserEmail(listing.highestBidderID);
         // If item was sold
         if (buyerEmail != false) {
             // Sends the seller an email
@@ -142,5 +128,6 @@ function handleExpiredListings(){
 export {
     handleExpiredListings,
     handleExpiredListing,
-    getBuyerLocation
+    getBuyerLocation,
+    getUserEmail
 }

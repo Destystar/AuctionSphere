@@ -187,7 +187,7 @@
                                         {#await getBuyerLocation(result.highestBidderID)}
                                             <p>Loading buyer location...</p>
                                         {:then location}
-                                            <dd class="mt-1 text-m font-bold text-neutral-950">{getBuyerLocation(result.highestBidderID)}</dd>
+                                            <dd class="mt-1 text-m font-bold text-neutral-950">{location}</dd>
                                         {:catch error}
                                             <dd class="mt-1 text-m font-bold text-red-700">Error loading buyer location</dd>
                                         {/await}
