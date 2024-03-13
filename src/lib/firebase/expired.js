@@ -1,7 +1,7 @@
 // @ts-nocheck
 //import nodemailer from 'nodemailer';
 import { deleteApp, getApp, getApps, initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, deleteDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, deleteDoc, collection } from "firebase/firestore";
 import { getStorage, ref, deleteObject } from "firebase/storage";
  
  // Email set up
