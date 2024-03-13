@@ -4,7 +4,6 @@
     import { getDoc, doc, setDoc } from "firebase/firestore";
     import "../app.css";
     import { authStore } from "../store/store";
-    import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 
     const nonAuthRoutes = ["/"];

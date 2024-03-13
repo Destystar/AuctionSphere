@@ -2,8 +2,8 @@
     // @ts-nocheck
     
     import { onMount } from 'svelte';
-    import { collection, query, where, getDoc, setDoc, doc, updateDoc, getDocs, getCountFromServer } from "firebase/firestore";
-    import { db, storage, auth } from "$lib/firebase/firebase";
+    import { collection, query, where, getDoc, doc, updateDoc, getDocs, getCountFromServer } from "firebase/firestore";
+    import { db, auth } from "$lib/firebase/firebase";
     import { writable } from 'svelte/store';
     import { getBuyerusername, getBuyerLocation, getUserEmail } from '$lib/firebase/expired';
 

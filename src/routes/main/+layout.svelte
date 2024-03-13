@@ -4,7 +4,7 @@
     import { authHandlers } from "../../store/store";
     import "../../app.css";
     import mainIcon from "../../resources/icons/appicon.png";
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount } from 'svelte';
     import { auth, db } from "$lib/firebase/firebase";
 
     let isProfileDropdownVisible = false;

@@ -3,7 +3,6 @@
 
     import Dashboard from "../../../component/Dashboard.svelte";
     import "../../../app.css";
-    import { writable } from "svelte/store";
     import { auth } from "$lib/firebase/firebase";
     import { onMount } from "svelte";
     import { handleExpiredListings } from "$lib/firebase/expired"

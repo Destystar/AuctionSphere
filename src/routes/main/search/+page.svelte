@@ -1,9 +1,7 @@
 <script>
 // @ts-nocheck
-
-  import { onMount } from 'svelte';
-  import { collection, query, where, limit, getDoc, setDoc, doc, updateDoc, getDocs, runTransaction } from 'firebase/firestore';
-  import { db, storage, auth } from '$lib/firebase/firebase';
+  import { collection, query, where, limit, setDoc, doc, getDocs, runTransaction } from 'firebase/firestore';
+  import { db, auth } from '$lib/firebase/firebase';
   import { eng } from 'stopword';
   import { writable } from 'svelte/store';
 

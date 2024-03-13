@@ -5,7 +5,7 @@
     import { authHandlers } from "../store/store";
     import { getCountryDataList } from 'countries-list';
     import { updateProfile, onAuthStateChanged } from "firebase/auth";
-    import { doc, setDoc, collection, getDocs, query, where } from "firebase/firestore";
+    import { doc, setDoc } from "firebase/firestore";
 
     // input variables 
     let email = "";
