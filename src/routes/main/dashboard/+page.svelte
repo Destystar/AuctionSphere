@@ -5,7 +5,6 @@
     import "../../../app.css";
     import { auth } from "$lib/firebase/firebase";
     import { onMount } from "svelte";
-    import { handleExpiredListings } from "$lib/firebase/expired"
 
     let user;
 
