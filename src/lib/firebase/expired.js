@@ -20,6 +20,7 @@ async function getUserEmail(userID) {
         const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
         const userData = docSnap.data();
+        console.log(userData.email);
         return userData.email;
     }
 }
