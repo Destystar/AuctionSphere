@@ -184,7 +184,13 @@
                                 <div class="ml-4">
                                     <dt class="text-m font-medium text-gray-500">Address Line One:</dt>
                                     {#if numBids[result.listingID] > 0 && $timers[result.listingID] === 'Listing Ended'}
-                                        <dd class="mt-1 text-m font-bold text-neutral-950">{getBuyerLocation(result.highestBidderID)}</dd>
+                                        {#await getBuyerLocation(result.highestBidderID)}
+                                            <p>Loading buyer location...</p>
+                                        {:then location}
+                                            <dd class="mt-1 text-m font-bold text-neutral-950">{getBuyerLocation(result.highestBidderID)}</dd>
+                                        {:catch error}
+                                            <dd class="mt-1 text-m font-bold text-red-700">Error loading buyer location</dd>
+                                        {/await}
                                     {:else if numBids[result.listingID] === 0}
                                         <dd class="mt-1 text-m font-bold text-red-700">There are no bids on this listing</dd>
                                     {:else}
