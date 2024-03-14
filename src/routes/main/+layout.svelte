@@ -8,7 +8,7 @@
     import { auth, db } from "$lib/firebase/firebase";
 
     let isProfileDropdownVisible = false;
-    let user = auth.currentUser;
+    let user;
     let GBP = 0;
     let EUR = 0;
     let USD = 0;
@@ -61,6 +61,7 @@
                 isProfileDropdownVisible = false;
             }
         }
+        user = auth.currentUser;
 
         GBP = getUserGBP(user.uid);
         EUR = getUserEUR(user.uid);
