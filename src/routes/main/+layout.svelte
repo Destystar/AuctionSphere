@@ -66,6 +66,7 @@
         EUR = getUserEUR(user.uid);
         USD = getUserUSD(user.uid);
         JPY = getUserJPY(user.uid);
+        console.log(user.uid);
 
         document.addEventListener('click', handleClickOutside);
 
