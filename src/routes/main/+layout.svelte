@@ -63,14 +63,17 @@
     }
 
     onMount(async () => {
+        while (!auth.currentUser) {
+            await new Promise(resolve => setTimeout(resolve, 100)); // wait for 100ms
+        }
+        user = auth.currentUser;
+        
         function handleClickOutside(event) {
             const dropdownElement = document.getElementById('profileDropdown');
             if (dropdownElement !== event.target && !dropdownElement.contains(event.target)) {
                 isProfileDropdownVisible = false;
             }
         }
-        user = auth.currentUser;
-        console.log(user.uid);
 
         await fetchUserCurrencies();
 
