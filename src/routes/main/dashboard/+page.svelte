@@ -13,7 +13,6 @@
             await new Promise(resolve => setTimeout(resolve, 100)); // wait for 100ms
         }
         user = auth.currentUser;
-        handleExpiredListings();
     });
 
 </script>
