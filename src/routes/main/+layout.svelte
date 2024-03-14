@@ -55,7 +55,14 @@
         }
     }
 
-    onMount(() => {
+    async function fetchUserCurrencies() {
+        GBP = await getUserGBP(user.uid);
+        EUR = await getUserEUR(user.uid);
+        USD = await getUserUSD(user.uid);
+        JPY = await getUserJPY(user.uid);
+    }
+
+    onMount(async () => {
         function handleClickOutside(event) {
             const dropdownElement = document.getElementById('profileDropdown');
             if (dropdownElement !== event.target && !dropdownElement.contains(event.target)) {
@@ -63,12 +70,9 @@
             }
         }
         user = auth.currentUser;
-
-        GBP = getUserGBP(user.uid);
-        EUR = getUserEUR(user.uid);
-        USD = getUserUSD(user.uid);
-        JPY = getUserJPY(user.uid);
         console.log(user.uid);
+
+        await fetchUserCurrencies();
 
         document.addEventListener('click', handleClickOutside);
 
