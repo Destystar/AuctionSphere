@@ -109,10 +109,10 @@
                     {#if isProfileDropdownVisible}
                         <div id="profileDropdown" class="absolute top-full right-0 mt-2 bg-white shadow-lg rounded overflow-hidden z-10">
                             <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap" on:click={authHandlers.logout}>Log out</a>
-                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">£{GBP}</a>
-                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">€{EUR}</a>
-                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">${USD}</a>
-                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">¥{JPY}</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">£{$GBP}</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">€{$EUR}</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">${$USD}</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200 whitespace-nowrap">¥{$JPY}</a>
                         </div>
                     {/if}
                 </div> 
