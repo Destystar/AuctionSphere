@@ -5,12 +5,14 @@
     import { collection, query, where, getDoc, doc, updateDoc, getDocs, getCountFromServer } from "firebase/firestore";
     import { db, auth } from "$lib/firebase/firebase";
     import { writable } from 'svelte/store';
+    import { fetchUserCurrencies } from '././+layout.svelte'
     import { getBuyerusername, getBuyerLocation, getUserEmail } from '$lib/firebase/expired';
 
     let searchQuery = '';
     let searchResults = [];
     let timers = writable({});
     let numBids = writable({});
+    let completedTransaction = writable({});
     const user = auth.currentUser;
 
     onMount(fetchSearchResults);
@@ -115,6 +117,10 @@
                 }
             }
 
+            for (let i = 0; i < searchResults.length; i++) {
+                $completedTransaction[[searchResults[i].id]] = false;
+            }
+
             searchResults = mergeSort(searchResults);
             return searchResults;
         } catch (error) {
@@ -122,68 +128,71 @@
         }
     }
 
-    async function handleTransaction(currency, sellerID, buyerID, price){
-        const sellerRef = doc(db, 'user', sellerID);
-        const sellerDocSnap = await getDoc(sellerRef);
-        if (sellerDocSnap.exists()) {
-            const sellerData = sellerDocSnap.data();
-            switch (currency) {
-                case "GBP":
-                    let sellerGBP = sellerData.GBP + price;
-                    await updateDoc(sellerRef, {
-                        GBP: sellerGBP
-                    });
-                    break;
-                case "EUR":
-                    let sellerEUR = sellerData.EUR + price;
-                    await updateDoc(sellerRef, {
-                        EUR: sellerEUR
-                    });
-                    break;
-                case "USD":
-                    let sellerUSD = sellerData.USD + price;
-                    await updateDoc(sellerRef, {
-                        USD: sellerUSD
-                    });
-                    break;
-                case "JPY":
-                    let sellerJPY = sellerData.JPY + price;
-                    await updateDoc(sellerRef, {
-                        JPY: sellerJPY
-                    });
-                    break;
+    async function handleTransaction(currency, sellerID, buyerID, price, listingID){
+        if ($completedTransaction[listingID] === false){
+            const sellerRef = doc(db, 'user', sellerID);
+            const sellerDocSnap = await getDoc(sellerRef);
+            if (sellerDocSnap.exists()) {
+                const sellerData = sellerDocSnap.data();
+                switch (currency) {
+                    case "GBP":
+                        let sellerGBP = sellerData.GBP + price;
+                        await updateDoc(sellerRef, {
+                            GBP: sellerGBP
+                        });
+                        break;
+                    case "EUR":
+                        let sellerEUR = sellerData.EUR + price;
+                        await updateDoc(sellerRef, {
+                            EUR: sellerEUR
+                        });
+                        break;
+                    case "USD":
+                        let sellerUSD = sellerData.USD + price;
+                        await updateDoc(sellerRef, {
+                            USD: sellerUSD
+                        });
+                        break;
+                    case "JPY":
+                        let sellerJPY = sellerData.JPY + price;
+                        await updateDoc(sellerRef, {
+                            JPY: sellerJPY
+                        });
+                        break;
+                }
             }
-        }
-        const buyerRef = doc(db, 'user', buyerID);
-        const buyerDocSnap = await getDoc(buyerRef);
-        if (buyerDocSnap.exists()) {
-            const buyerData = buyerDocSnap.data();
-            switch (currency) {
-                case "GBP":
-                    let buyerGBP = buyerData.GBP - price;
-                    await updateDoc(buyerRef, {
-                        GBP: buyerGBP
-                    });
-                    break;
-                case "EUR":
-                    let buyerEUR = buyerData.EUR - price;
-                    await updateDoc(buyerRef, {
-                        EUR: buyerEUR
-                    });
-                    break;
-                case "USD":
-                    let buyerUSD = buyerData.USD - price;
-                    await updateDoc(buyerRef, {
-                        USD: buyerUSD
-                    });
-                    break;
-                case "JPY":
-                    let buyerJPY = buyerData.JPY - price;
-                    await updateDoc(buyerRef, {
-                        JPY: buyerJPY
-                    });
-                    break;
+            const buyerRef = doc(db, 'user', buyerID);
+            const buyerDocSnap = await getDoc(buyerRef);
+            if (buyerDocSnap.exists()) {
+                const buyerData = buyerDocSnap.data();
+                switch (currency) {
+                    case "GBP":
+                        let buyerGBP = buyerData.GBP - price;
+                        await updateDoc(buyerRef, {
+                            GBP: buyerGBP
+                        });
+                        break;
+                    case "EUR":
+                        let buyerEUR = buyerData.EUR - price;
+                        await updateDoc(buyerRef, {
+                            EUR: buyerEUR
+                        });
+                        break;
+                    case "USD":
+                        let buyerUSD = buyerData.USD - price;
+                        await updateDoc(buyerRef, {
+                            USD: buyerUSD
+                        });
+                        break;
+                    case "JPY":
+                        let buyerJPY = buyerData.JPY - price;
+                        await updateDoc(buyerRef, {
+                            JPY: buyerJPY
+                        });
+                        break;
+                }
             }
+            $completedTransaction[listingID] = true;
         }
     }
 
@@ -274,7 +283,7 @@
                             </div>
                         <div>
                             {#if numBids[result.listingID] > 0 && $timers[result.listingID] === 'Listing Ended'}
-                                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" on:click={handleTransaction(result.currency, user.uid, result.highestBidderID, result.price)}>Complete Transaction</button>
+                                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" on:click={handleTransaction(result.currency, user.uid, result.highestBidderID, result.price, result.listingID)}>Complete Transaction</button>
                             {/if}
                         </div>
                     </div>   

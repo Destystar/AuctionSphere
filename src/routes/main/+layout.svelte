@@ -5,15 +5,16 @@
     import "../../app.css";
     import mainIcon from "../../resources/icons/appicon.png";
     import { onMount } from 'svelte';
+    import { writable } from "svelte/store";
     import { doc, getDoc } from "firebase/firestore";
     import { auth, db } from "$lib/firebase/firebase";
 
     let isProfileDropdownVisible = false;
     let user;
-    let GBP = 0;
-    let EUR = 0;
-    let USD = 0;
-    let JPY = 0;
+    export const GBP = writable(0);
+    export const EUR = writable(0);
+    export const USD = writable(0);
+    export const JPY = writable(0);
 
     async function getUserGBP(userID) {
         const userRef = doc(db, 'user', userID);
@@ -55,11 +56,11 @@
         }
     }
 
-    async function fetchUserCurrencies() {
-        GBP = await getUserGBP(user.uid);
-        EUR = await getUserEUR(user.uid);
-        USD = await getUserUSD(user.uid);
-        JPY = await getUserJPY(user.uid);
+    export async function fetchUserCurrencies() {
+        GBP.set(await getUserGBP(user.uid));
+        EUR.set(await getUserGBP(user.uid));
+        USD.set(await getUserGBP(user.uid));
+        JPY.set(await getUserGBP(user.uid));
     }
 
     onMount(async () => {
@@ -84,9 +85,7 @@
         };
     });
 
-    /**
-     * @param {{ stopPropagation: () => void; }} event
-     */
+
     function showProfileDropdown(event) {
         isProfileDropdownVisible = true;
         event.stopPropagation(); // Prevent parent elements from handling the event
