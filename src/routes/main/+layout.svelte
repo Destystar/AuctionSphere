@@ -69,7 +69,10 @@
             }
         }
 
-        await fetchUserCurrencies();
+        GBP.set(await getUserGBP);
+        EUR.set(await getUserEUR);
+        USD.set(await getUserUSD);
+        JPY.set(await getUserJPY);
 
         document.addEventListener('click', handleClickOutside);
 
