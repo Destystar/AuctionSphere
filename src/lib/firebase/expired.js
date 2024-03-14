@@ -54,6 +54,14 @@ async function getBuyerLocation(userID) {
     }
 }
 
+// User Currency Retrieval
+async function fetchUserCurrencies() {
+    GBP.set(await getUserGBP(user.uid));
+    EUR.set(await getUserGBP(user.uid));
+    USD.set(await getUserGBP(user.uid));
+    JPY.set(await getUserGBP(user.uid));
+}
+
 async function fetchExpiredListings() {
     try {
         const listingsCol = collection(db, 'listings');
@@ -82,5 +90,6 @@ async function fetchExpiredListings() {
 export {
     getBuyerLocation,
     getUserEmail,
-    getBuyerusername
+    getBuyerusername,
+    fetchUserCurrencies
 }

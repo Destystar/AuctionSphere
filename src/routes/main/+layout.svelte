@@ -56,13 +56,6 @@
         }
     }
 
-    export async function fetchUserCurrencies() {
-        GBP.set(await getUserGBP(user.uid));
-        EUR.set(await getUserGBP(user.uid));
-        USD.set(await getUserGBP(user.uid));
-        JPY.set(await getUserGBP(user.uid));
-    }
-
     onMount(async () => {
         while (!auth.currentUser) {
             await new Promise(resolve => setTimeout(resolve, 100)); // wait for 100ms

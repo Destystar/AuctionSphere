@@ -5,7 +5,7 @@
     import { collection, query, where, getDoc, doc, updateDoc, getDocs, getCountFromServer } from "firebase/firestore";
     import { db, auth } from "$lib/firebase/firebase";
     import { writable } from 'svelte/store';
-    import { fetchUserCurrencies } from '././+layout.svelte'
+    import { fetchUserCurrencies } from '$lib/firebase/expired';
     import { getBuyerusername, getBuyerLocation, getUserEmail } from '$lib/firebase/expired';
 
     let searchQuery = '';
@@ -193,6 +193,7 @@
                 }
             }
             $completedTransaction[listingID] = true;
+            fetchUserCurrencies();
         }
     }
 
